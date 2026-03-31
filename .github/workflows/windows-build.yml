@@ -1,0 +1,48 @@
+# 参考 .github/workflows/run_bundling.yml 中 bundle_windows_x86_64 job
+# 添加了 Windows 长路径支持来解决 python-environment-tools 构建问题
+name: Windows Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-2022
+    env:
+      CARGO_INCREMENTAL: 0
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          clean: false
+
+      - name: Enable Long Paths
+        run: |
+          git config --system core.longpaths true
+        shell: bash
+
+      - name: Setup cargo config
+        run: |
+          New-Item -ItemType Directory -Path "./../.cargo" -Force
+          Copy-Item -Path "./.cargo/ci-config.toml" -Destination "./../.cargo/config.toml"
+        shell: pwsh
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build
+        run: cargo build --release -p zed
+
+      - name: Build CLI
+        run: cargo build --release -p cli
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: zed-windows-exe
+          path: target/release/zed.exe
+          retention-days: 7
