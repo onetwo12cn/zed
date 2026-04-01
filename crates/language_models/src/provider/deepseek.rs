@@ -632,7 +632,7 @@ impl Render for ConfigurationView {
         } else {
             let api_url = DeepSeekLanguageModelProvider::api_url(cx);
             if api_url == DEEPSEEK_API_URL {
-                "API key configured".to_string()
+                "API 密钥已配置".to_string()
             } else {
                 format!("API key configured for {}", api_url)
             }
@@ -640,13 +640,13 @@ impl Render for ConfigurationView {
 
         if self.load_credentials_task.is_some() {
             div()
-                .child(Label::new("Loading credentials..."))
+                .child(Label::new("正在加载凭证..."))
                 .into_any_element()
         } else if self.should_render_editor(cx) {
             v_flex()
                 .size_full()
                 .on_action(cx.listener(Self::save_api_key))
-                .child(Label::new("To use DeepSeek in Zed, you need an API key:"))
+                .child(Label::new("要在 AIReach 中使用 DeepSeek,您需要一个 API 密钥:"))
                 .child(
                     List::new()
                         .child(

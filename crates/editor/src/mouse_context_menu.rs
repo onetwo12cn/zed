@@ -254,19 +254,19 @@ pub fn deploy_context_menu(
                     run_to_cursor || (evaluate_selection && has_selections),
                     |builder| builder.separator(),
                 )
-                .action("Go to Definition", Box::new(GoToDefinition))
-                .action("Go to Declaration", Box::new(GoToDeclaration))
-                .action("Go to Type Definition", Box::new(GoToTypeDefinition))
-                .action("Go to Implementation", Box::new(GoToImplementation))
+                .action("跳转到定义", Box::new(GoToDefinition))
+                .action("跳转到声明", Box::new(GoToDeclaration))
+                .action("跳转到类型定义", Box::new(GoToTypeDefinition))
+                .action("跳转到实现", Box::new(GoToImplementation))
                 .action(
-                    "Find All References",
+                    "查找所有引用",
                     Box::new(FindAllReferences::default()),
                 )
                 .separator()
-                .action("Rename Symbol", Box::new(Rename))
-                .action("Format Buffer", Box::new(Format))
+                .action("重命名符号", Box::new(Rename))
+                .action("格式化缓冲区", Box::new(Format))
                 .when(has_selections, |cx| {
-                    cx.action("Format Selections", Box::new(FormatSelections))
+                    cx.action("格式化选择", Box::new(FormatSelections))
                 })
                 .action(
                     "Show Code Actions",
@@ -279,10 +279,10 @@ pub fn deploy_context_menu(
                     this.action("Add to Agent Thread", Box::new(AddSelectionToThread))
                 })
                 .separator()
-                .action("Cut", Box::new(Cut))
-                .action("Copy", Box::new(Copy))
+                .action("剪切", Box::new(Cut))
+                .action("复制", Box::new(Copy))
                 .action("Copy and Trim", Box::new(CopyAndTrim))
-                .action("Paste", Box::new(Paste))
+                .action("粘贴", Box::new(Paste))
                 .separator()
                 .action_disabled_when(
                     !has_reveal_target,
@@ -297,12 +297,12 @@ pub fn deploy_context_menu(
                 })
                 .action_disabled_when(
                     !has_reveal_target,
-                    "Open in Terminal",
+                    "在终端中打开",
                     Box::new(OpenInTerminal),
                 )
                 .action_disabled_when(
                     !has_git_repo,
-                    "Copy Permalink",
+                    "复制永久链接",
                     Box::new(CopyPermalinkToLine),
                 )
                 .action_disabled_when(

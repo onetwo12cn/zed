@@ -95,7 +95,7 @@ impl SlashCommand for DiagnosticsSlashCommand {
     }
 
     fn description(&self) -> String {
-        "Insert diagnostics".into()
+        "插入诊断".into()
     }
 
     fn icon(&self) -> IconName {
@@ -193,7 +193,7 @@ impl SlashCommand for DiagnosticsSlashCommand {
         window.spawn(cx, async move |_| {
             task.await?
                 .map(|output| output.into_event_stream())
-                .context("No diagnostics found")
+                .context("未找到诊断")
         })
     }
 }
@@ -270,7 +270,7 @@ pub fn collect_diagnostics_output(
         let mut output = SlashCommandOutput::default();
 
         if let Some(error_source) = error_source.as_ref() {
-            writeln!(output.text, "diagnostics: {}", error_source).unwrap();
+            writeln!(output.text, "诊断:{}", error_source).unwrap();
         } else {
             writeln!(output.text, "diagnostics").unwrap();
         }
@@ -332,7 +332,7 @@ pub fn collect_diagnostics_output(
         }
 
         let mut label = String::new();
-        label.push_str("Diagnostics");
+        label.push_str("诊断");
         if let Some(source) = error_source {
             write!(label, " ({})", source).unwrap();
         }
@@ -341,14 +341,14 @@ pub fn collect_diagnostics_output(
             label.push(':');
 
             if project_summary.error_count > 0 {
-                write!(label, " {} errors", project_summary.error_count).unwrap();
+                write!(label, " {} 错误", project_summary.error_count).unwrap();
                 if project_summary.warning_count > 0 {
                     label.push_str(",");
                 }
             }
 
             if project_summary.warning_count > 0 {
-                write!(label, " {} warnings", project_summary.warning_count).unwrap();
+                write!(label, " {} 警告", project_summary.warning_count).unwrap();
             }
         }
 

@@ -527,11 +527,11 @@ impl Render for ProjectSearchView {
             let is_search_underway = model.pending_search.is_some();
 
             let heading_text = if is_search_underway {
-                "Searching…"
+                "搜索中…"
             } else if has_no_results {
-                "No Results"
+                "无结果"
             } else {
-                "Search All Files"
+                "搜索所有文件"
             };
 
             let heading_text = div()
@@ -541,7 +541,7 @@ impl Render for ProjectSearchView {
             let page_content: Option<AnyElement> = if let Some(no_results) = model.no_results {
                 if model.pending_search.is_none() && no_results {
                     Some(
-                        Label::new("No results found in this project for the provided query")
+                        Label::new("在此项目中未找到提供的查询的结果")
                             .size(LabelSize::Small)
                             .into_any_element(),
                     )
@@ -588,7 +588,7 @@ impl Item for ProjectSearchView {
             .is_empty()
             .not()
             .then(|| query_text.into())
-            .or_else(|| Some("Project Search".into()))
+            .or_else(|| Some("项目搜索".into()))
     }
 
     fn act_as_type<'a>(
@@ -632,7 +632,7 @@ impl Item for ProjectSearchView {
 
         last_query
             .filter(|query| !query.is_empty())
-            .unwrap_or_else(|| "Project Search".into())
+            .unwrap_or_else(|| "项目搜索".into())
     }
 
     fn telemetry_event_text(&self) -> Option<&'static str> {
@@ -677,7 +677,7 @@ impl Item for ProjectSearchView {
         _window: &mut Window,
         _: &mut Context<Self>,
     ) -> Task<anyhow::Result<()>> {
-        unreachable!("save_as should not have been called")
+        unreachable!("save_as 不应该被调用")
     }
 
     fn reload(
@@ -935,7 +935,7 @@ impl ProjectSearchView {
 
         let query_editor = cx.new(|cx| {
             let mut editor = Editor::auto_height(1, 4, window, cx);
-            editor.set_placeholder_text("Search all files…", window, cx);
+            editor.set_placeholder_text("搜索所有文件…", window, cx);
             editor.set_use_autoclose(false);
             editor.set_text(query_text, window, cx);
             editor
@@ -959,7 +959,7 @@ impl ProjectSearchView {
         );
         let replacement_editor = cx.new(|cx| {
             let mut editor = Editor::auto_height(1, 4, window, cx);
-            editor.set_placeholder_text("Replace in project…", window, cx);
+            editor.set_placeholder_text("在项目中替换…", window, cx);
             if let Some(text) = replacement_text {
                 editor.set_text(text, window, cx);
             }
@@ -1673,7 +1673,7 @@ impl ProjectSearchView {
                     }),
             )
             .child(
-                Button::new("find-replace", "Find and replace")
+                Button::new("find-replace", "查找和替换")
                     .start_icon(Icon::new(IconName::Replace).size(IconSize::Small))
                     .key_binding(KeyBinding::for_action_in(&ToggleReplace, &focus_handle, cx))
                     .on_click(|_event, window, cx| {
@@ -1681,7 +1681,7 @@ impl ProjectSearchView {
                     }),
             )
             .child(
-                Button::new("regex", "Match with regex")
+                Button::new("regex", "正则匹配")
                     .start_icon(Icon::new(IconName::Regex).size(IconSize::Small))
                     .key_binding(KeyBinding::for_action_in(&ToggleRegex, &focus_handle, cx))
                     .on_click(|_event, window, cx| {
@@ -1701,7 +1701,7 @@ impl ProjectSearchView {
                     }),
             )
             .child(
-                Button::new("match-whole-words", "Match whole words")
+                Button::new("match-whole-words", "全词匹配")
                     .start_icon(Icon::new(IconName::WholeWord).size(IconSize::Small))
                     .key_binding(KeyBinding::for_action_in(
                         &ToggleWholeWord,
@@ -2266,7 +2266,7 @@ impl Render for ProjectSearchBar {
                 IconButton::new("project-search-filter-button", IconName::Filter)
                     .shape(IconButtonShape::Square)
                     .tooltip(|_window, cx| {
-                        Tooltip::for_action("Toggle Filters", &ToggleFilters, cx)
+                        Tooltip::for_action("切换过滤器", &ToggleFilters, cx)
                     })
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.toggle_filters(window, cx);
@@ -2281,7 +2281,7 @@ impl Render for ProjectSearchBar {
                         let focus_handle = focus_handle.clone();
                         move |_window, cx| {
                             Tooltip::for_action_in(
-                                "Toggle Filters",
+                                "切换过滤器",
                                 &ToggleFilters,
                                 &focus_handle,
                                 cx,
@@ -2296,7 +2296,7 @@ impl Render for ProjectSearchBar {
                     .as_ref()
                     .map(|search| search.read(cx).replace_enabled)
                     .and_then(|enabled| enabled.then_some(ActionButtonState::Toggled)),
-                "Toggle Replace",
+                "切换替换",
                 &ToggleReplace,
                 focus_handle.clone(),
             ))
@@ -2353,7 +2353,7 @@ impl Render for ProjectSearchBar {
                     "project-search-replace-button",
                     IconName::ReplaceNext,
                     is_search_underway.then_some(ActionButtonState::Disabled),
-                    "Replace Next Match",
+                    "替换下一个匹配项",
                     &ReplaceNext,
                     focus_handle.clone(),
                 ))
@@ -2361,7 +2361,7 @@ impl Render for ProjectSearchBar {
                     "project-search-replace-button",
                     IconName::ReplaceAll,
                     Default::default(),
-                    "Replace All Matches",
+                    "替换所有匹配项",
                     &ReplaceAll,
                     focus_handle,
                 ));
@@ -2398,7 +2398,7 @@ impl Render for ProjectSearchBar {
                     IconButton::new("project-search-opened-only", IconName::FolderSearch)
                         .shape(IconButtonShape::Square)
                         .toggle_state(self.is_opened_only_enabled(cx))
-                        .tooltip(Tooltip::text("Only Search Open Files"))
+                        .tooltip(Tooltip::text("仅搜索打开的文件"))
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.toggle_opened_only(window, cx);
                         })),
@@ -3092,7 +3092,7 @@ pub mod tests {
         });
         assert!(
             active_item.is_none(),
-            "Expected no search panel to be active"
+            "预期没有搜索面板处于活动状态"
         );
 
         workspace.update_in(cx, move |workspace, window, cx| {
@@ -3118,7 +3118,7 @@ pub mod tests {
                 .active_item()
                 .and_then(|item| item.downcast::<ProjectSearchView>())
         }) else {
-            panic!("Search view expected to appear after new search event trigger")
+            panic!("触发新搜索事件后,预期搜索视图会出现")
         };
 
         cx.spawn(|mut cx| async move {
@@ -3135,7 +3135,7 @@ pub mod tests {
                 search_view.update(cx, |search_view, cx| {
                     assert!(
                         search_view.query_editor.focus_handle(cx).is_focused(window),
-                        "Empty search view should be focused after the toggle focus event: no results panel to focus on",
+                        "切换焦点事件后,空搜索视图应获得焦点:没有结果面板可供聚焦",
                     );
                 });
         }).unwrap();
@@ -3146,19 +3146,19 @@ pub mod tests {
                     let query_editor = &search_view.query_editor;
                     assert!(
                         query_editor.focus_handle(cx).is_focused(window),
-                        "Search view should be focused after the new search view is activated",
+                        "新搜索视图激活后,搜索视图应获得焦点",
                     );
                     let query_text = query_editor.read(cx).text(cx);
                     assert!(
                         query_text.is_empty(),
-                        "New search query should be empty but got '{query_text}'",
+                        "新搜索查询应为空,但得到 '{query_text}'",
                     );
                     let results_text = search_view
                         .results_editor
                         .update(cx, |editor, cx| editor.display_text(cx));
                     assert!(
                         results_text.is_empty(),
-                        "Empty search view should have no results but got '{results_text}'"
+                        "空搜索视图应没有结果,但得到 '{results_text}'"
                     );
                 });
             })
@@ -3183,11 +3183,11 @@ pub mod tests {
                         .update(cx, |editor, cx| editor.display_text(cx));
                     assert!(
                         results_text.is_empty(),
-                        "Search view for mismatching query should have no results but got '{results_text}'"
+                        "不匹配查询的搜索视图应没有结果,但得到 '{results_text}'"
                     );
                     assert!(
                         search_view.query_editor.focus_handle(cx).is_focused(window),
-                        "Search view should be focused after mismatching query had been used in search",
+                        "使用不匹配查询进行搜索后,搜索视图应获得焦点",
                     );
                 });
             }).unwrap();
@@ -3203,7 +3203,7 @@ pub mod tests {
             search_view.update(cx, |search_view, cx| {
                 assert!(
                     search_view.query_editor.focus_handle(cx).is_focused(window),
-                    "Search view with mismatching query should be focused after the toggle focus event: still no results panel to focus on",
+                    "切换焦点事件后,不匹配查询的搜索视图应获得焦点:仍然没有结果面板可供聚焦",
                 );
             });
         }).unwrap();
@@ -3226,11 +3226,11 @@ pub mod tests {
                         .results_editor
                         .update(cx, |editor, cx| editor.display_text(cx)),
                     "\n\nconst THREE: usize = one::ONE + two::TWO;\n\n\nconst TWO: usize = one::ONE + one::ONE;",
-                    "Search view results should match the query"
+                    "搜索视图结果应与查询匹配"
                 );
                 assert!(
                     search_view.results_editor.focus_handle(cx).is_focused(window),
-                    "Search view with mismatching query should be focused after search results are available",
+                    "搜索结果可用后,不匹配查询的搜索视图应获得焦点",
                 );
             });
         }).unwrap();
@@ -3247,7 +3247,7 @@ pub mod tests {
             search_view.update(cx, |search_view, cx| {
                 assert!(
                     search_view.results_editor.focus_handle(cx).is_focused(window),
-                    "Search view with matching query should still have its results editor focused after the toggle focus event",
+                    "切换焦点事件后,匹配查询的搜索视图应仍然聚焦在结果编辑器上",
                 );
             });
         }).unwrap();
@@ -3262,17 +3262,17 @@ pub mod tests {
         });
         window.update(cx, |_, window, cx| {
             search_view.update(cx, |search_view, cx| {
-                assert_eq!(search_view.query_editor.read(cx).text(cx), "two", "Query should be updated to first search result after search view 2nd open in a row");
+                assert_eq!(search_view.query_editor.read(cx).text(cx), "two", "连续第二次打开搜索视图后,查询应更新为第一个搜索结果");
                 assert_eq!(
                     search_view
                         .results_editor
                         .update(cx, |editor, cx| editor.display_text(cx)),
                     "\n\nconst THREE: usize = one::ONE + two::TWO;\n\n\nconst TWO: usize = one::ONE + one::ONE;",
-                    "Results should be unchanged after search view 2nd open in a row"
+                    "连续第二次打开搜索视图后,结果应保持不变"
                 );
                 assert!(
                     search_view.query_editor.focus_handle(cx).is_focused(window),
-                    "Focus should be moved into query editor again after search view 2nd open in a row"
+                    "连续第二次打开搜索视图后,焦点应再次移到查询编辑器"
                 );
             });
         }).unwrap();
@@ -3290,7 +3290,7 @@ pub mod tests {
             search_view.update(cx, |search_view, cx| {
                 assert!(
                     search_view.results_editor.focus_handle(cx).is_focused(window),
-                    "Search view with matching query should switch focus to the results editor after the toggle focus event",
+                    "切换焦点事件后,匹配查询的搜索视图应将焦点切换到结果编辑器",
                 );
             });
         }).unwrap();
@@ -3342,7 +3342,7 @@ pub mod tests {
                 .active_item()
                 .and_then(|item| item.downcast::<ProjectSearchView>())
         }) else {
-            panic!("Search view expected to appear after new search event trigger")
+            panic!("触发新搜索事件后,预期搜索视图会出现")
         };
 
         cx.spawn(|mut cx| async move {
@@ -3451,7 +3451,7 @@ pub mod tests {
         });
         assert!(
             active_item.is_none(),
-            "Expected no search panel to be active"
+            "预期没有搜索面板处于活动状态"
         );
 
         workspace.update_in(cx, move |workspace, window, cx| {
@@ -3472,7 +3472,7 @@ pub mod tests {
                 .active_item()
                 .and_then(|item| item.downcast::<ProjectSearchView>())
         }) else {
-            panic!("Search view expected to appear after new search event trigger")
+            panic!("触发新搜索事件后,预期搜索视图会出现")
         };
 
         cx.spawn(|mut cx| async move {
@@ -3489,7 +3489,7 @@ pub mod tests {
             search_view.update(cx, |search_view, cx| {
                     assert!(
                         search_view.query_editor.focus_handle(cx).is_focused(window),
-                        "Empty search view should be focused after the toggle focus event: no results panel to focus on",
+                        "切换焦点事件后,空搜索视图应获得焦点:没有结果面板可供聚焦",
                     );
                 });
         }).unwrap();
@@ -3500,19 +3500,19 @@ pub mod tests {
                     let query_editor = &search_view.query_editor;
                     assert!(
                         query_editor.focus_handle(cx).is_focused(window),
-                        "Search view should be focused after the new search view is activated",
+                        "新搜索视图激活后,搜索视图应获得焦点",
                     );
                     let query_text = query_editor.read(cx).text(cx);
                     assert!(
                         query_text.is_empty(),
-                        "New search query should be empty but got '{query_text}'",
+                        "新搜索查询应为空,但得到 '{query_text}'",
                     );
                     let results_text = search_view
                         .results_editor
                         .update(cx, |editor, cx| editor.display_text(cx));
                     assert!(
                         results_text.is_empty(),
-                        "Empty search view should have no results but got '{results_text}'"
+                        "空搜索视图应没有结果,但得到 '{results_text}'"
                     );
                 });
             })
@@ -3538,11 +3538,11 @@ pub mod tests {
                         .update(cx, |editor, cx| editor.display_text(cx));
                     assert!(
                 results_text.is_empty(),
-                "Search view for mismatching query should have no results but got '{results_text}'"
+                "不匹配查询的搜索视图应没有结果,但得到 '{results_text}'"
             );
                     assert!(
                 search_view.query_editor.focus_handle(cx).is_focused(window),
-                "Search view should be focused after mismatching query had been used in search",
+                "使用不匹配查询进行搜索后,搜索视图应获得焦点",
             );
                 });
             })
@@ -3558,7 +3558,7 @@ pub mod tests {
             search_view.update(cx, |search_view, cx| {
                     assert!(
                         search_view.query_editor.focus_handle(cx).is_focused(window),
-                        "Search view with mismatching query should be focused after the toggle focus event: still no results panel to focus on",
+                        "切换焦点事件后,不匹配查询的搜索视图应获得焦点:仍然没有结果面板可供聚焦",
                     );
                 });
         }).unwrap();
@@ -3581,11 +3581,11 @@ pub mod tests {
                         .results_editor
                         .update(cx, |editor, cx| editor.display_text(cx)),
                     "\n\nconst THREE: usize = one::ONE + two::TWO;\n\n\nconst TWO: usize = one::ONE + one::ONE;",
-                    "Search view results should match the query"
+                    "搜索视图结果应与查询匹配"
                 );
                 assert!(
                     search_view.results_editor.focus_handle(cx).is_focused(window),
-                    "Search view with mismatching query should be focused after search results are available",
+                    "搜索结果可用后,不匹配查询的搜索视图应获得焦点",
                 );
             })).unwrap();
         cx.spawn(|mut cx| async move {
@@ -3601,7 +3601,7 @@ pub mod tests {
             search_view.update(cx, |search_view, cx| {
                     assert!(
                         search_view.results_editor.focus_handle(cx).is_focused(window),
-                        "Search view with matching query should still have its results editor focused after the toggle focus event",
+                        "切换焦点事件后,匹配查询的搜索视图应仍然聚焦在结果编辑器上",
                     );
                 });
         }).unwrap();
@@ -3618,26 +3618,26 @@ pub mod tests {
                 .active_item()
                 .and_then(|item| item.downcast::<ProjectSearchView>())
         }) else {
-            panic!("Search view expected to appear after new search event trigger")
+            panic!("触发新搜索事件后,预期搜索视图会出现")
         };
         assert!(
             search_view_2 != search_view,
-            "New search view should be open after `workspace::NewSearch` event"
+            "`workspace::NewSearch` 事件后应打开新搜索视图"
         );
 
         window.update(cx, |_, window, cx| {
             search_view.update(cx, |search_view, cx| {
-                    assert_eq!(search_view.query_editor.read(cx).text(cx), "TWO", "First search view should not have an updated query");
+                    assert_eq!(search_view.query_editor.read(cx).text(cx), "TWO", "第一个搜索视图不应有更新的查询");
                     assert_eq!(
                         search_view
                             .results_editor
                             .update(cx, |editor, cx| editor.display_text(cx)),
                         "\n\nconst THREE: usize = one::ONE + two::TWO;\n\n\nconst TWO: usize = one::ONE + one::ONE;",
-                        "Results of the first search view should not update too"
+                        "第一个搜索视图的结果也不应更新"
                     );
                     assert!(
                         !search_view.query_editor.focus_handle(cx).is_focused(window),
-                        "Focus should be moved away from the first search view"
+                        "焦点应移离第一个搜索视图"
                     );
                 });
         }).unwrap();
@@ -3647,18 +3647,18 @@ pub mod tests {
                     assert_eq!(
                         search_view_2.query_editor.read(cx).text(cx),
                         "two",
-                        "New search view should get the query from the text cursor was at during the event spawn (first search view's first result)"
+                        "新搜索视图应从事件生成期间文本光标所在的位置获取查询(第一个搜索视图的第一个结果)"
                     );
                     assert_eq!(
                         search_view_2
                             .results_editor
                             .update(cx, |editor, cx| editor.display_text(cx)),
                         "",
-                        "No search results should be in the 2nd view yet, as we did not spawn a search for it"
+                        "第二个视图中不应有搜索结果,因为我们没有为其生成搜索"
                     );
                     assert!(
                         search_view_2.query_editor.focus_handle(cx).is_focused(window),
-                        "Focus should be moved into query editor of the new window"
+                        "焦点应移到新窗口的查询编辑器"
                     );
                 });
         }).unwrap();
@@ -3682,11 +3682,11 @@ pub mod tests {
                             .results_editor
                             .update(cx, |editor, cx| editor.display_text(cx)),
                         "\n\nconst FOUR: usize = one::ONE + three::THREE;",
-                        "New search view with the updated query should have new search results"
+                        "具有更新查询的新搜索视图应有新的搜索结果"
                     );
                     assert!(
                         search_view_2.results_editor.focus_handle(cx).is_focused(window),
-                        "Search view with mismatching query should be focused after search results are available",
+                        "搜索结果可用后,不匹配查询的搜索视图应获得焦点",
                     );
                 });
         }).unwrap();
@@ -3704,7 +3704,7 @@ pub mod tests {
             search_view_2.update(cx, |search_view_2, cx| {
                     assert!(
                         search_view_2.results_editor.focus_handle(cx).is_focused(window),
-                        "Search view with matching query should switch focus to the results editor after the toggle focus event",
+                        "切换焦点事件后,匹配查询的搜索视图应将焦点切换到结果编辑器",
                     );
                 });}).unwrap();
     }
@@ -3750,7 +3750,7 @@ pub mod tests {
         });
         assert!(
             active_item.is_none(),
-            "Expected no search panel to be active"
+            "预期没有搜索面板处于活动状态"
         );
 
         workspace.update_in(cx, move |workspace, window, cx| {
@@ -3767,7 +3767,7 @@ pub mod tests {
                 .project()
                 .read(cx)
                 .entry_for_path(&(worktree_id, rel_path("a")).into(), cx)
-                .expect("no entry for /a/ directory")
+                .expect("没有 /a/ 目录的条目")
                 .clone()
         });
         assert!(a_dir_entry.is_dir());
@@ -3783,7 +3783,7 @@ pub mod tests {
                 .active_item()
                 .and_then(|item| item.downcast::<ProjectSearchView>())
         }) else {
-            panic!("Search view expected to appear after new search in directory event trigger")
+            panic!("触发目录中新搜索事件后,预期搜索视图会出现")
         };
         cx.background_executor.run_until_parked();
         window
@@ -3791,19 +3791,19 @@ pub mod tests {
                 search_view.update(cx, |search_view, cx| {
                     assert!(
                         search_view.query_editor.focus_handle(cx).is_focused(window),
-                        "On new search in directory, focus should be moved into query editor"
+                        "在目录中新搜索时,焦点应移到查询编辑器"
                     );
                     search_view.excluded_files_editor.update(cx, |editor, cx| {
                         assert!(
                             editor.display_text(cx).is_empty(),
-                            "New search in directory should not have any excluded files"
+                            "目录中新搜索不应有任何排除的文件"
                         );
                     });
                     search_view.included_files_editor.update(cx, |editor, cx| {
                         assert_eq!(
                             editor.display_text(cx),
                             a_dir_entry.path.display(PathStyle::local()),
-                            "New search in directory should have included dir entry path"
+                            "目录中新搜索应包含目录条目路径"
                         );
                     });
                 });
@@ -3828,7 +3828,7 @@ pub mod tests {
                     .results_editor
                     .update(cx, |editor, cx| editor.display_text(cx)),
                 "\n\nconst ONE: usize = 1;\n\n\nconst TWO: usize = one::ONE + one::ONE;",
-                "New search in directory should have a filter that matches a certain directory"
+                "目录中新搜索应有一个匹配特定目录的过滤器"
             );
                 })
             })
@@ -3879,7 +3879,7 @@ pub mod tests {
                 .read(cx)
                 .active_item()
                 .and_then(|item| item.downcast::<ProjectSearchView>())
-                .expect("Search view expected to appear after new search event trigger")
+                .expect("触发新搜索事件后,预期搜索视图会出现")
         });
 
         // Add 3 search items into the history + another unsubmitted one.
@@ -4300,7 +4300,7 @@ pub mod tests {
                 .read(cx)
                 .active_item(cx)
                 .and_then(|item| item.downcast::<ProjectSearchView>())
-                .expect("Search view expected to appear after new search event trigger")
+                .expect("触发新搜索事件后,预期搜索视图会出现")
         });
 
         let second_pane = workspace
@@ -4339,7 +4339,7 @@ pub mod tests {
                 .read(cx)
                 .active_item(cx)
                 .and_then(|item| item.downcast::<ProjectSearchView>())
-                .expect("Search view expected to appear after new search event trigger")
+                .expect("触发新搜索事件后,预期搜索视图会出现")
         });
 
         cx.run_until_parked();
@@ -4673,7 +4673,7 @@ pub mod tests {
                     );
                 });
             })
-            .expect("unable to update search view");
+            .expect("无法更新搜索视图");
 
         // Second search
         perform_search(search_view, "B", cx);
@@ -4689,7 +4689,7 @@ pub mod tests {
                     assert_eq!(results_editor.scroll_position(cx), Point::default());
                 });
             })
-            .expect("unable to update search view");
+            .expect("无法更新搜索视图");
     }
 
     #[perf]
@@ -4745,7 +4745,7 @@ pub mod tests {
             })
         });
 
-        let buffer_search_query = "search bar query";
+        let buffer_search_query = "搜索栏查询";
         buffer_search_bar
             .update_in(&mut cx, |buffer_search_bar, window, cx| {
                 buffer_search_bar.focus_handle(cx).focus(window, cx);
@@ -4763,12 +4763,12 @@ pub mod tests {
                 pane.active_item()
                     .and_then(|item| item.downcast::<ProjectSearchView>())
             })
-            .expect("should open a project search view after spawning a new search");
+            .expect("生成新搜索后应打开项目搜索视图");
         project_search_view.update(&mut cx, |search_view, cx| {
             assert_eq!(
                 search_view.search_query_text(cx),
                 buffer_search_query,
-                "Project search should take the query from the buffer search bar since it got focused and had a query inside"
+                "项目搜索应从缓冲区搜索栏获取查询,因为它获得了焦点并且里面有查询"
             );
         });
     }

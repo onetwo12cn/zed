@@ -249,20 +249,20 @@ fn load_shell_from_passwd() -> Result<()> {
             &mut result,
         )
     };
-    anyhow::ensure!(!result.is_null(), "passwd entry for uid {} not found", uid);
+    anyhow::ensure!(!result.is_null(), "未找到 uid {} 的 passwd 条目", uid);
 
     // SAFETY: If `getpwuid_r` doesn't error, we have the entry here.
     let entry = unsafe { pwd.assume_init() };
 
     anyhow::ensure!(
         status == 0,
-        "call to getpwuid_r failed. uid: {}, status: {}",
+        "调用 getpwuid_r 失败。uid: {},状态: {}",
         uid,
         status
     );
     anyhow::ensure!(
         entry.pw_uid == uid,
-        "passwd entry has different uid ({}) than getuid ({}) returned",
+        "passwd 条目的 uid ({}) 与 getuid ({}) 返回的不同",
         entry.pw_uid,
         uid,
     );
@@ -274,7 +274,7 @@ fn load_shell_from_passwd() -> Result<()> {
 
     if should_set_shell {
         log::info!(
-            "updating SHELL environment variable to value from passwd entry: {:?}",
+            "将 SHELL 环境变量更新为 passwd 条目中的值: {:?}",
             shell,
         );
         unsafe { std::env::set_var("SHELL", shell) };
@@ -373,7 +373,7 @@ pub async fn load_login_shell_environment() -> Result<()> {
     }
 
     log::info!(
-        "set environment variables from shell:{}, path:{}",
+        "从 shell 设置环境变量: {},路径: {}",
         std::env::var("SHELL").unwrap_or_default(),
         std::env::var("PATH").unwrap_or_default(),
     );
@@ -925,7 +925,7 @@ mod tests {
             assert_eq!(
                 NumericPrefixWithSuffix::from_numeric_prefixed_str(numeric_prefix_less),
                 NumericPrefixWithSuffix(None, numeric_prefix_less),
-                "String without numeric prefix `{numeric_prefix_less}` should not be converted into NumericPrefixWithSuffix"
+                "没有数字前缀的字符串 `{numeric_prefix_less}` 不应转换为 NumericPrefixWithSuffix"
             )
         }
     }
@@ -939,7 +939,7 @@ mod tests {
             ("👋!", false),
             ("👋 ", false),
             (" 👋", false),
-            ("Test", false),
+            ("测试", false),
         ];
 
         for (text, expected_result) in words_to_test {

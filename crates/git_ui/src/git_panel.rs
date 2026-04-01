@@ -175,12 +175,12 @@ fn git_panel_context_menu(
             .context(focus_handle)
             .action_disabled_when(
                 !state.has_unstaged_changes,
-                "Stage All",
+                "暂存所有",
                 StageAll.boxed_clone(),
             )
             .action_disabled_when(
                 !state.has_staged_changes,
-                "Unstage All",
+                "取消暂存所有",
                 UnstageAll.boxed_clone(),
             )
             .separator()
@@ -192,16 +192,16 @@ fn git_panel_context_menu(
             .action_disabled_when(!state.has_stash_items, "Stash Pop", StashPop.boxed_clone())
             .action("View Stash", zed_actions::git::ViewStash.boxed_clone())
             .separator()
-            .action("Open Diff", project_diff::Diff.boxed_clone())
+            .action("打开差异", project_diff::Diff.boxed_clone())
             .separator()
             .action_disabled_when(
                 !state.has_tracked_changes,
-                "Discard Tracked Changes",
+                "放弃已追踪的更改",
                 RestoreTrackedFiles.boxed_clone(),
             )
             .action_disabled_when(
                 !state.has_new_changes,
-                "Trash Untracked Files",
+                "回收未追踪文件",
                 TrashUntrackedFiles.boxed_clone(),
             )
             .separator()
@@ -292,9 +292,9 @@ impl GitHeaderEntry {
     }
     pub fn title(&self) -> &'static str {
         match self.header {
-            Section::Conflict => "Conflicts",
-            Section::Tracked => "Tracked",
-            Section::New => "Untracked",
+            Section::Conflict => "冲突",
+            Section::Tracked => "追踪",
+            Section::New => "未追踪",
         }
     }
 }
@@ -692,7 +692,7 @@ pub(crate) fn commit_message_editor(
     commit_editor.set_use_modal_editing(true);
     commit_editor.set_show_wrap_guides(false, cx);
     commit_editor.set_show_indent_guides(false, cx);
-    let placeholder = placeholder.unwrap_or("Enter commit message".into());
+    let placeholder = placeholder.unwrap_or("键入提交信息".into());
     commit_editor.set_placeholder_text(&placeholder, window, cx);
     commit_editor
 }
@@ -1349,7 +1349,7 @@ impl GitPanel {
                 let item = open_task
                     .await
                     .notify_workspace_async_err(workspace, &mut cx)
-                    .ok_or_else(|| anyhow::anyhow!("Failed to open file"))?;
+                    .ok_or_else(|| anyhow::anyhow!("打开文件失败"))?;
                 if let Some(active_editor) = item.downcast::<Editor>() {
                     if let Some(diff_task) =
                         active_editor.update(cx, |editor, _cx| editor.wait_for_diff_to_load())
@@ -1408,7 +1408,7 @@ impl GitPanel {
                             .unwrap_or(entry.repo_path.display(path_style).as_ref()),
                     ),
                     None,
-                    &["Discard Changes", "Cancel"],
+                    &["Discard Changes", "取消"],
                     cx,
                 );
                 cx.background_spawn(prompt)
@@ -1524,7 +1524,7 @@ impl GitPanel {
             if !entry.status.is_created() {
                 self.perform_checkout(vec![entry.clone()], window, cx);
             } else {
-                let prompt = prompt(&format!("Trash {}?", filename), None, window, cx);
+                let prompt = prompt(&format!("回收 {}?", filename), None, window, cx);
                 cx.spawn_in(window, async move |_, cx| {
                     match prompt.await? {
                         TrashCancel::Trash => {}
@@ -1541,7 +1541,7 @@ impl GitPanel {
                     Ok(())
                 })
                 .detach_and_prompt_err(
-                    "Failed to trash file",
+                    "回收文件失败",
                     window,
                     cx,
                     |e, _, _| Some(format!("{e}")),
@@ -1661,7 +1661,7 @@ impl GitPanel {
             Cancel,
         }
         let prompt = prompt(
-            "Discard changes to these files?",
+            "丢弃这些文件的更改?",
             Some(&details),
             window,
             cx,
@@ -1713,7 +1713,7 @@ impl GitPanel {
             details.push_str(&format!("\nand {} more…", to_delete.len() - 5))
         }
 
-        let prompt = prompt("Trash these files?", Some(&details), window, cx);
+        let prompt = prompt("回收这些文件?", Some(&details), window, cx);
         cx.spawn_in(window, async move |this, cx| {
             match prompt.await? {
                 TrashCancel::Trash => {}
@@ -1742,7 +1742,7 @@ impl GitPanel {
             }
             Ok(())
         })
-        .detach_and_prompt_err("Failed to trash files", window, cx, |e, _, _| {
+        .detach_and_prompt_err("回收文件失败", window, cx, |e, _, _| {
             Some(format!("{e}"))
         });
     }
@@ -2134,7 +2134,7 @@ impl GitPanel {
 
     fn on_commit(&mut self, _: &git::Commit, window: &mut Window, cx: &mut Context<Self>) {
         if self.commit(&self.commit_editor.focus_handle(cx), window, cx) {
-            telemetry::event!("Git Committed", source = "Git Panel");
+            telemetry::event!("Git 已提交", source = "Git 面板");
         }
     }
 
@@ -2169,7 +2169,7 @@ impl GitPanel {
 
     fn on_amend(&mut self, _: &git::Amend, window: &mut Window, cx: &mut Context<Self>) {
         if self.amend(&self.commit_editor.focus_handle(cx), window, cx) {
-            telemetry::event!("Git Amended", source = "Git Panel");
+            telemetry::event!("Git Amended", source = "Git 面板");
         }
     }
 
@@ -2311,7 +2311,7 @@ impl GitPanel {
 
         if self.has_unstaged_conflicts() {
             error_spawn(
-                "There are still conflicts. You must stage these before committing",
+                "仍然存在冲突。在提交之前,您必须暂存这些更改。",
                 window,
                 cx,
             );
@@ -2349,7 +2349,7 @@ impl GitPanel {
                 .collect::<Vec<_>>();
 
             if changed_files.is_empty() && !options.amend {
-                error_spawn("No changes to commit", window, cx);
+                error_spawn("无更改可提交", window, cx);
                 return;
             }
 
@@ -2391,7 +2391,7 @@ impl GitPanel {
         let Some(repo) = self.active_repository.clone() else {
             return;
         };
-        telemetry::event!("Git Uncommitted");
+        telemetry::event!("Git 未提交");
 
         let confirmation = self.check_for_pushed_commits(window, cx);
         let prior_head = self.load_commit_details("HEAD".to_string(), cx);
@@ -2440,7 +2440,7 @@ impl GitPanel {
         let mut cx = window.to_async(cx);
 
         async move {
-            let repo = repo.context("No active repository")?;
+            let repo = repo.context("无活动仓库")?;
 
             let pushed_to: Vec<SharedString> = repo
                 .update(&mut cx, |repo, _| repo.check_for_pushed_commits())
@@ -2456,11 +2456,11 @@ impl GitPanel {
                     Cancel,
                 }
                 let detail = format!(
-                    "This commit was already pushed to {}.",
+                    "此提交已被推送到 {}。",
                     pushed_to.into_iter().join(", ")
                 );
                 let result = cx
-                    .update(|window, cx| prompt("Are you sure?", Some(&detail), window, cx))?
+                    .update(|window, cx| prompt("您确定吗?", Some(&detail), window, cx))?
                     .await?;
 
                 match result {
@@ -2492,11 +2492,11 @@ impl GitPanel {
         }?;
 
         let action_text = if git_status_entry.status.is_deleted() {
-            Some("Delete")
+            Some("删除")
         } else if git_status_entry.status.is_created() {
-            Some("Create")
+            Some("创建")
         } else if git_status_entry.status.is_modified() {
-            Some("Update")
+            Some("更新")
         } else {
             None
         }?;
@@ -2685,7 +2685,7 @@ impl GitPanel {
             return;
         };
 
-        telemetry::event!("Git Commit Message Generated");
+        telemetry::event!("Git 提交信息已生成");
 
         let diff = repo.update(cx, |repo, cx| {
             if self.has_staged_changes() {
@@ -2868,7 +2868,7 @@ impl GitPanel {
         let Some(repo) = self.active_repository.clone() else {
             return;
         };
-        telemetry::event!("Git Fetched");
+        telemetry::event!("Git 已提取");
         let askpass = self.askpass_delegate("git fetch", window, cx);
         let this = cx.weak_entity();
 
@@ -2896,7 +2896,7 @@ impl GitPanel {
                     match remote_message {
                         Ok(remote_message) => this.show_remote_output(action, remote_message, cx),
                         Err(e) => {
-                            log::error!("Error while fetching {:?}", e);
+                            log::error!("抓取 {:?} 时出错", e);
                             this.show_error_toast(action.name(), e, cx)
                         }
                     }
@@ -2933,8 +2933,8 @@ impl GitPanel {
         } else if worktrees.is_empty() {
             let result = window.prompt(
                 PromptLevel::Warning,
-                "Unable to initialize a git repository",
-                Some("Open a directory first"),
+                "无法初始化 git 仓库",
+                Some("请先打开一个目录"),
                 &["Ok"],
                 cx,
             );
@@ -2961,7 +2961,7 @@ impl GitPanel {
                 })
                 .collect_vec();
             let prompt = picker_prompt::prompt(
-                "Where would you like to initialize this git repository?",
+                "您想在哪初始化此 git 仓库?",
                 worktree_directories,
                 self.workspace.clone(),
                 window,
@@ -3013,7 +3013,7 @@ impl GitPanel {
         let Some(branch) = repo.read(cx).branch.as_ref() else {
             return;
         };
-        telemetry::event!("Git Pulled");
+        telemetry::event!("Git 已拉取");
         let branch = branch.clone();
         let remote = self.get_remote(false, false, window, cx);
         cx.spawn_in(window, async move |this, cx| {
@@ -3023,7 +3023,7 @@ impl GitPanel {
                     return Ok(());
                 }
                 Err(e) => {
-                    log::error!("Failed to get current remote: {}", e);
+                    log::error!("获取当前远程仓库失败:{}", e);
                     this.update(cx, |this, cx| this.show_error_toast("pull", e, cx))
                         .ok();
                     return Ok(());
@@ -3049,7 +3049,7 @@ impl GitPanel {
             this.update(cx, |this, cx| match remote_message {
                 Ok(remote_message) => this.show_remote_output(action, remote_message, cx),
                 Err(e) => {
-                    log::error!("Error while pulling {:?}", e);
+                    log::error!("拉取 {:?} 时出错", e);
                     this.show_error_toast(action.name(), e, cx)
                 }
             })
@@ -3076,7 +3076,7 @@ impl GitPanel {
         let Some(branch) = repo.read(cx).branch.as_ref() else {
             return;
         };
-        telemetry::event!("Git Pushed");
+        telemetry::event!("Git 已推送");
         let branch = branch.clone();
 
         let options = if force_push {
@@ -3100,7 +3100,7 @@ impl GitPanel {
                     return Ok(());
                 }
                 Err(e) => {
-                    log::error!("Failed to get current remote: {}", e);
+                    log::error!("获取当前远程仓库失败:{}", e);
                     this.update(cx, |this, cx| this.show_error_toast("push", e, cx))
                         .ok();
                     return Ok(());
@@ -3135,7 +3135,7 @@ impl GitPanel {
             this.update(cx, |this, cx| match remote_output {
                 Ok(remote_message) => this.show_remote_output(action, remote_message, cx),
                 Err(e) => {
-                    log::error!("Error while pushing {:?}", e);
+                    log::error!("推送 {:?} 时出错", e);
                     this.show_error_toast(action.name(), e, cx)
                 }
             })?;
@@ -3150,7 +3150,7 @@ impl GitPanel {
             let repo = self
                 .active_repository
                 .clone()
-                .ok_or_else(|| anyhow::anyhow!("No active repository"))?;
+                .ok_or_else(|| anyhow::anyhow!("无活动仓库"))?;
 
             let (branch, remote_origin, remote_upstream) = {
                 let repository = repo.read(cx);
@@ -3161,7 +3161,7 @@ impl GitPanel {
                 )
             };
 
-            let branch = branch.ok_or_else(|| anyhow::anyhow!("No active branch"))?;
+            let branch = branch.ok_or_else(|| anyhow::anyhow!("无活动分支"))?;
             let source_branch = branch
                 .upstream
                 .as_ref()
@@ -3245,13 +3245,13 @@ impl GitPanel {
         let mut cx = window.to_async(cx);
 
         async move {
-            let repo = repo.context("No active repository")?;
+            let repo = repo.context("无活动仓库")?;
             let current_remotes: Vec<Remote> = repo
                 .update(&mut cx, |repo, _| {
                     let current_branch = if always_select {
                         None
                     } else {
-                        let current_branch = repo.branch.as_ref().context("No active branch")?;
+                        let current_branch = repo.branch.as_ref().context("无活动分支")?;
                         Some(current_branch.name().to_string())
                     };
                     anyhow::Ok(repo.get_remotes(current_branch, is_push))
@@ -3730,7 +3730,7 @@ impl GitPanel {
         self.select_first_entry_if_none(window, cx);
 
         let suggested_commit_message = self.suggest_commit_message(cx);
-        let placeholder_text = suggested_commit_message.unwrap_or("Enter commit message".into());
+        let placeholder_text = suggested_commit_message.unwrap_or("键入提交信息".into());
 
         self.commit_editor.update(cx, |editor, cx| {
             editor.set_placeholder_text(&placeholder_text, window, cx)
@@ -3857,7 +3857,7 @@ impl GitPanel {
                     Toast => this.icon(ToastIcon::new(IconName::GitBranchAlt).color(Color::Muted)),
                     ToastWithLog { output } => this
                         .icon(ToastIcon::new(IconName::GitBranchAlt).color(Color::Muted))
-                        .action("View Log", move |window, cx| {
+                        .action("查看日志", move |window, cx| {
                             let output = output.clone();
                             let output =
                                 format!("stdout:\n{}\nstderr:\n{}", output.stdout, output.stderr);
@@ -4034,7 +4034,7 @@ impl GitPanel {
                         Tooltip::simple("Configure an LLM provider to generate commit messages", cx)
                     } else {
                         Tooltip::for_action_in(
-                            "Generate Commit Message",
+                            "生成提交信息",
                             &git::GenerateCommitMessage,
                             &editor_focus_handle,
                             cx,
@@ -4158,15 +4158,15 @@ impl GitPanel {
 
     pub fn configure_commit_button(&self, cx: &mut Context<Self>) -> (bool, &'static str) {
         if self.has_unstaged_conflicts() {
-            (false, "You must resolve conflicts before committing")
+            (false, "提交前必须解决冲突")
         } else if !self.has_staged_changes() && !self.has_tracked_changes() && !self.amend_pending {
-            (false, "No changes to commit")
+            (false, "无更改可提交")
         } else if self.pending_commit.is_some() {
-            (false, "Commit in progress")
+            (false, "提交进行中")
         } else if !self.has_commit_message(cx) {
-            (false, "No commit message")
+            (false, "没有提交信息")
         } else if !self.has_write_access(cx) {
-            (false, "You do not have write access to this project")
+            (false, "您没有对此项目的写入权限")
         } else {
             (true, self.commit_button_title())
         }
@@ -4182,9 +4182,9 @@ impl GitPanel {
                 "Amend"
             }
         } else if self.has_staged_changes() {
-            "Commit"
+            "提交"
         } else {
-            "Commit Tracked"
+            "提交追踪"
         }
     }
 
@@ -4213,15 +4213,15 @@ impl GitPanel {
 
         let (text, action, stage, tooltip) =
             if self.total_staged_count() == self.entry_count && self.entry_count > 0 {
-                ("Unstage All", UnstageAll.boxed_clone(), false, "git reset")
+                ("取消暂存所有", UnstageAll.boxed_clone(), false, "git reset")
             } else {
-                ("Stage All", StageAll.boxed_clone(), true, "git add --all")
+                ("暂存所有", StageAll.boxed_clone(), true, "git add --all")
             };
 
         let change_string = match self.changes_count {
-            0 => "No Changes".to_string(),
-            1 => "1 Change".to_string(),
-            count => format!("{} Changes", count),
+            0 => "没有更改".to_string(),
+            1 => "1 处更改".to_string(),
+            count => format!("{} 处更改", count),
         };
 
         Some(
@@ -4232,7 +4232,7 @@ impl GitPanel {
                     panel_button(change_string)
                         .color(Color::Muted)
                         .tooltip(Tooltip::for_action_title_in(
-                            "Open Diff",
+                            "打开差异",
                             &Diff,
                             &self.focus_handle,
                         ))
@@ -4395,7 +4395,7 @@ impl GitPanel {
                                     .size(ui::ButtonSize::Default)
                                     .tooltip(move |_window, cx| {
                                         Tooltip::for_action_in(
-                                            "Open Commit Modal",
+                                            "打开提交模态框",
                                             &git::ExpandCommitEditor,
                                             &expand_tooltip_focus_handle,
                                             cx,
@@ -4451,7 +4451,7 @@ impl GitPanel {
                 .on_click({
                     let git_panel = cx.weak_entity();
                     move |_, window, cx| {
-                        telemetry::event!("Git Committed", source = "Git Panel");
+                        telemetry::event!("Git 已提交", source = "Git 面板");
                         git_panel
                             .update(cx, |git_panel, cx| {
                                 git_panel.commit_changes(
@@ -4513,7 +4513,7 @@ impl GitPanel {
                     ),
             )
             .child(
-                panel_button("Cancel")
+                panel_button("取消")
                     .size(ButtonSize::Default)
                     .on_click(cx.listener(|this, _, _, cx| this.set_amend_pending(false, cx))),
             )
@@ -4590,7 +4590,7 @@ impl GitPanel {
                                     .icon_size(IconSize::Small)
                                     .tooltip(move |_window, cx| {
                                         Tooltip::with_meta(
-                                            "Uncommit",
+                                            "撤销",
                                             Some(&git::Uncommit),
                                             if has_unstaged {
                                                 "git reset HEAD^ --soft"
@@ -4632,9 +4632,9 @@ impl GitPanel {
             has_repo && self.changes_count == 0 && !self.is_on_main_branch(cx);
 
         let label = if has_repo {
-            "No changes to commit"
+            "无更改可提交"
         } else {
-            "No Git repositories"
+            "无 Git 仓库"
         };
 
         v_flex()
@@ -4645,7 +4645,7 @@ impl GitPanel {
             .child(Label::new(label).size(LabelSize::Small).color(Color::Muted))
             .when(has_no_repo && worktree_count > 0, |this| {
                 this.child(
-                    panel_filled_button("Initialize Repository")
+                    panel_filled_button("初始化仓库")
                         .tooltip(Tooltip::for_action_title_in(
                             "git init",
                             &git::Init,
@@ -4939,7 +4939,7 @@ impl GitPanel {
         cx: &mut Context<Self>,
     ) -> Task<anyhow::Result<CommitDetails>> {
         let Some(repo) = self.active_repository.clone() else {
-            return Task::ready(Err(anyhow::anyhow!("no active repo")));
+            return Task::ready(Err(anyhow::anyhow!("无活动仓库")));
         };
         repo.update(cx, |repo, cx| {
             let show = repo.show(sha);
@@ -4958,12 +4958,12 @@ impl GitPanel {
             return;
         };
         let stage_title = if entry.status.staging().is_fully_staged() {
-            "Unstage File"
+            "取消暂存更改"
         } else {
-            "Stage File"
+            "暂存更改"
         };
         let restore_title = if entry.status.is_created() {
-            "Trash File"
+            "回收"
         } else {
             "Discard Changes"
         };
@@ -4979,8 +4979,8 @@ impl GitPanel {
                     git::AddToGitignore.boxed_clone(),
                 )
                 .separator()
-                .action("Open Diff", menu::Confirm.boxed_clone())
-                .action("Open File", menu::SecondaryConfirm.boxed_clone())
+                .action("打开差异", menu::Confirm.boxed_clone())
+                .action("打开文件", menu::SecondaryConfirm.boxed_clone())
                 .separator()
                 .action_disabled_when(is_created, "View File History", Box::new(git::FileHistory))
         });
@@ -5242,8 +5242,8 @@ impl GitPanel {
                             })
                             .tooltip(move |_window, cx| {
                                 let action = match stage_status {
-                                    StageStatus::Staged => "Unstage",
-                                    StageStatus::Unstaged | StageStatus::PartiallyStaged => "Stage",
+                                    StageStatus::Staged => "取消暂存",
+                                    StageStatus::Unstaged | StageStatus::PartiallyStaged => "暂存",
                                 };
                                 let tooltip_name = action.to_string();
 
@@ -5424,8 +5424,8 @@ impl GitPanel {
                             })
                             .tooltip(move |_window, cx| {
                                 let action = match stage_status {
-                                    StageStatus::Staged => "Unstage",
-                                    StageStatus::Unstaged | StageStatus::PartiallyStaged => "Stage",
+                                    StageStatus::Staged => "取消暂存",
+                                    StageStatus::Unstaged | StageStatus::PartiallyStaged => "暂存",
                                 };
                                 Tooltip::simple(format!("{action} folder"), cx)
                             }),
@@ -5799,7 +5799,7 @@ impl Panel for GitPanel {
     }
 
     fn icon_tooltip(&self, _window: &Window, _cx: &App) -> Option<&'static str> {
-        Some("Git Panel")
+        Some("Git 面板")
     }
 
     fn icon_label(&self, _: &Window, cx: &App) -> Option<String> {
@@ -6014,7 +6014,7 @@ impl RenderOnce for PanelRepoFooter {
                         .collect::<String>()
                 })
             })
-            .unwrap_or_else(|| " (no branch)".to_owned());
+            .unwrap_or_else(|| "(无分支)".to_owned());
         let show_separator = self.branch.is_some() || self.head_commit.is_some();
 
         let active_repo_name = self.active_repository.clone();
@@ -6096,7 +6096,7 @@ impl RenderOnce for PanelRepoFooter {
             })
             .trigger_with_tooltip(
                 branch_selector_button,
-                Tooltip::for_action_title("Switch Branch", &zed_actions::git::Switch),
+                Tooltip::for_action_title("切换分支", &zed_actions::git::Switch),
             )
             .anchor(Corner::BottomLeft)
             .offset(gpui::Point {
@@ -6191,7 +6191,7 @@ impl Component for PanelRepoFooter {
                 }),
                 most_recent_commit: Some(CommitSummary {
                     sha: "abc123".into(),
-                    subject: "Modify stuff".into(),
+                    subject: "修改内容".into(),
                     commit_timestamp: 1710932954,
                     author_name: "John Doe".into(),
                     has_parent: true,
@@ -6209,7 +6209,7 @@ impl Component for PanelRepoFooter {
                 }),
                 most_recent_commit: Some(CommitSummary {
                     sha: "abc123".into(),
-                    subject: "Modify stuff".into(),
+                    subject: "修改内容".into(),
                     commit_timestamp: 1710932954,
                     author_name: "John Doe".into(),
                     has_parent: true,
@@ -6229,10 +6229,10 @@ impl Component for PanelRepoFooter {
                 .flex_none()
                 .children(vec![
                     example_group_with_title(
-                        "Action Button States",
+                        "操作按钮状态",
                         vec![
                             single_example(
-                                "No Branch",
+                                "无分支",
                                 div()
                                     .w(example_width)
                                     .overflow_hidden()
@@ -6240,7 +6240,7 @@ impl Component for PanelRepoFooter {
                                     .into_any_element(),
                             ),
                             single_example(
-                                "Remote status unknown",
+                                "远程状态未知",
                                 div()
                                     .w(example_width)
                                     .overflow_hidden()
@@ -6251,7 +6251,7 @@ impl Component for PanelRepoFooter {
                                     .into_any_element(),
                             ),
                             single_example(
-                                "No Remote Upstream",
+                                "无远程上游",
                                 div()
                                     .w(example_width)
                                     .overflow_hidden()
@@ -6262,7 +6262,7 @@ impl Component for PanelRepoFooter {
                                     .into_any_element(),
                             ),
                             single_example(
-                                "Not Ahead or Behind",
+                                "既不领先也不落后",
                                 div()
                                     .w(example_width)
                                     .overflow_hidden()
@@ -6273,7 +6273,7 @@ impl Component for PanelRepoFooter {
                                     .into_any_element(),
                             ),
                             single_example(
-                                "Behind remote",
+                                "落后于远程",
                                 div()
                                     .w(example_width)
                                     .overflow_hidden()
@@ -6284,7 +6284,7 @@ impl Component for PanelRepoFooter {
                                     .into_any_element(),
                             ),
                             single_example(
-                                "Ahead of remote",
+                                "领先于远程",
                                 div()
                                     .w(example_width)
                                     .overflow_hidden()
@@ -6295,7 +6295,7 @@ impl Component for PanelRepoFooter {
                                     .into_any_element(),
                             ),
                             single_example(
-                                "Ahead and behind remote",
+                                "既领先又落后于远程",
                                 div()
                                     .w(example_width)
                                     .overflow_hidden()
@@ -6312,10 +6312,10 @@ impl Component for PanelRepoFooter {
                 ])
                 .children(vec![
                     example_group_with_title(
-                        "Labels",
+                        "标签",
                         vec![
                             single_example(
-                                "Short Branch & Repo",
+                                "简短分支与仓库",
                                 div()
                                     .w(example_width)
                                     .overflow_hidden()
@@ -6326,7 +6326,7 @@ impl Component for PanelRepoFooter {
                                     .into_any_element(),
                             ),
                             single_example(
-                                "Long Branch",
+                                "长分支",
                                 div()
                                     .w(example_width)
                                     .overflow_hidden()
@@ -6340,7 +6340,7 @@ impl Component for PanelRepoFooter {
                                     .into_any_element(),
                             ),
                             single_example(
-                                "Long Repo",
+                                "长仓库",
                                 div()
                                     .w(example_width)
                                     .overflow_hidden()
@@ -6351,7 +6351,7 @@ impl Component for PanelRepoFooter {
                                     .into_any_element(),
                             ),
                             single_example(
-                                "Long Repo & Branch",
+                                "长仓库与分支",
                                 div()
                                     .w(example_width)
                                     .overflow_hidden()
@@ -6365,7 +6365,7 @@ impl Component for PanelRepoFooter {
                                     .into_any_element(),
                             ),
                             single_example(
-                                "Uppercase Repo",
+                                "大写仓库",
                                 div()
                                     .w(example_width)
                                     .overflow_hidden()
@@ -6411,7 +6411,7 @@ fn open_output(
     let editor = cx.new(|cx| {
         let mut editor = Editor::for_buffer(buffer, None, window, cx);
         editor.buffer().update(cx, |buffer, cx| {
-            buffer.set_title(format!("Output from git {operation}"), cx);
+            buffer.set_title(format!("来自 git {operation} 的输出"), cx);
         });
         editor.set_read_only(true);
         editor
@@ -6436,9 +6436,9 @@ pub(crate) fn show_error_toast(
     } else {
         workspace.update(cx, |workspace, cx| {
             let workspace_weak = cx.weak_entity();
-            let toast = StatusToast::new(format!("git {} failed", action), cx, |this, _cx| {
+            let toast = StatusToast::new(format!("git {} 失败", action), cx, |this, _cx| {
                 this.icon(ToastIcon::new(IconName::XCircle).color(Color::Error))
-                    .action("View Log", move |window, cx| {
+                    .action("查看日志", move |window, cx| {
                         let message = message.clone();
                         let action = action.clone();
                         workspace_weak
@@ -6508,7 +6508,7 @@ mod tests {
                 code: proto::ErrorCode::Internal as i32,
                 tags: Default::default(),
             },
-            "Pull",
+            "拉取",
         );
 
         let message = format_git_error_toast_message(&rpc_error);
@@ -6528,7 +6528,7 @@ mod tests {
                 code: proto::ErrorCode::Internal as i32,
                 tags: Default::default(),
             },
-            "Pull",
+            "拉取",
         );
         let wrapped = rpc_error.context("sending pull request");
 
@@ -7782,7 +7782,7 @@ mod tests {
         // - [x] untracked
         //
         // The commit message should now read:
-        // "Enter commit message"
+        // "键入提交信息"
         // (which means we should see None returned).
         let message = panel.update(cx, |panel, cx| panel.suggest_commit_message(cx));
         assert!(message.is_none());

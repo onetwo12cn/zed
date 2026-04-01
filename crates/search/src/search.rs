@@ -97,10 +97,10 @@ impl SearchOption {
 
     pub fn label(&self) -> &'static str {
         match self {
-            SearchOption::WholeWord => "Match Whole Words",
+            SearchOption::WholeWord => "全字匹配",
             SearchOption::CaseSensitive => "Match Case Sensitivity",
-            SearchOption::IncludeIgnored => "Also search files ignored by configuration",
-            SearchOption::Regex => "Use Regular Expressions",
+            SearchOption::IncludeIgnored => "也搜索配置忽略的文件",
+            SearchOption::Regex => "使用正则表达式",
             SearchOption::OneMatchPerLine => "One Match Per Line",
             SearchOption::Backwards => "Search Backwards",
         }
@@ -196,7 +196,7 @@ pub(crate) fn show_no_more_matches(window: &mut Window, cx: &mut App) {
         };
         workspace.update(cx, |workspace, cx| {
             workspace.show_toast(
-                Toast::new(notification_id.clone(), "No more matches").autohide(),
+                Toast::new(notification_id.clone(), "没有更多匹配项").autohide(),
                 cx,
             );
         })

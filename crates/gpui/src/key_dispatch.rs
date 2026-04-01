@@ -17,7 +17,7 @@
 //!   fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
 //!     div()
 //!       .track_focus(&self.focus_handle(cx))
-//!       .key_context("Editor")
+//!       .key_context("编辑器")
 //!       .on_action(cx.listener(Editor::undo))
 //!       .on_action(cx.listener(Editor::redo))
 //!     ...
@@ -31,8 +31,8 @@
 //!
 //! ```ignore
 //! cx.bind_keys([
-//!   KeyBinding::new("cmd-z", Editor::undo, Some("Editor")),
-//!   KeyBinding::new("cmd-shift-z", Editor::redo, Some("Editor")),
+//!   KeyBinding::new("cmd-z", Editor::undo, Some("编辑器")),
+//!   KeyBinding::new("cmd-shift-z", Editor::redo, Some("编辑器")),
 //! ])
 //! ```
 //!
@@ -713,7 +713,7 @@ mod tests {
 
         let contexts = vec![
             KeyContext::parse("Workspace").unwrap(),
-            KeyContext::parse("Editor").unwrap(),
+            KeyContext::parse("编辑器").unwrap(),
         ];
 
         let bindings = tree.bindings_for_action(&TestAction, &contexts);

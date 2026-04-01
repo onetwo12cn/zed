@@ -36,7 +36,7 @@ use crate::provider::util::{fix_streamed_json, parse_tool_arguments};
 
 const PROVIDER_ID: LanguageModelProviderId = LanguageModelProviderId::new("copilot_chat");
 const PROVIDER_NAME: LanguageModelProviderName =
-    LanguageModelProviderName::new("GitHub Copilot Chat");
+    LanguageModelProviderName::new("GitHub Copilot 聊天");
 
 pub struct CopilotChatLanguageModelProvider {
     state: Entity<State>,
@@ -156,21 +156,21 @@ impl LanguageModelProvider for CopilotChatLanguageModelProvider {
         let err = match copilot.0.read(cx).status() {
             Status::Authorized => return Task::ready(Ok(())),
             Status::Disabled => anyhow!(
-                "Copilot must be enabled for Copilot Chat to work. Please enable Copilot and try again."
+                "Copilot 必须启用才能使用 Copilot 聊天。请启用 Copilot 并重试。"
             ),
             Status::Error(err) => anyhow!(format!(
                 "Received the following error while signing into Copilot: {err}"
             )),
             Status::Starting { task: _ } => anyhow!(
-                "Copilot is still starting, please wait for Copilot to start then try again"
+                "Copilot 仍在启动中,请等待 Copilot 启动后重试"
             ),
             Status::Unauthorized => anyhow!(
-                "Unable to authorize with Copilot. Please make sure that you have an active Copilot and Copilot Chat subscription."
+                "无法授权 Copilot。请确保您有有效的 Copilot 和 Copilot 聊天订阅。"
             ),
             Status::SignedOut { .. } => {
-                anyhow!("You have signed out of Copilot. Please sign in to Copilot and try again.")
+                anyhow!("您已退出 Copilot。请登录 Copilot 并重试。")
             }
-            Status::SigningIn { prompt: _ } => anyhow!("Still signing into Copilot..."),
+            Status::SigningIn { prompt: _ } => anyhow!("仍在登录 Copilot..."),
         };
 
         Task::ready(Err(err.into()))
@@ -198,7 +198,7 @@ impl LanguageModelProvider for CopilotChatLanguageModelProvider {
 
     fn reset_credentials(&self, _cx: &mut App) -> Task<Result<()>> {
         Task::ready(Err(anyhow!(
-            "Signing out of GitHub Copilot Chat is currently not supported."
+            "登出 GitHub Copilot 聊天目前不受支持。"
         )))
     }
 }

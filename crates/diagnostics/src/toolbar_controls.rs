@@ -47,9 +47,9 @@ impl Render for ToolbarControls {
         }
 
         let (warning_tooltip, warning_color) = if include_warnings {
-            ("Exclude Warnings", Color::Warning)
+            ("排除警告", Color::Warning)
         } else {
-            ("Include Warnings", Color::Disabled)
+            ("包括警告", Color::Disabled)
         };
 
         h_flex()

@@ -76,15 +76,15 @@ impl CopilotServer {
         let server = self.as_running()?;
         anyhow::ensure!(
             matches!(server.sign_in_status, SignInStatus::Authorized),
-            "must sign in before using copilot"
+            "使用 Copilot 前必须登录"
         );
         Ok(server)
     }
 
     fn as_running(&mut self) -> Result<&mut RunningCopilotServer> {
         match self {
-            CopilotServer::Starting { .. } => anyhow::bail!("copilot is still starting"),
-            CopilotServer::Disabled => anyhow::bail!("copilot is disabled"),
+            CopilotServer::Starting { .. } => anyhow::bail!("copilot 仍在启动"),
+            CopilotServer::Disabled => anyhow::bail!("copilot 已禁用"),
             CopilotServer::Error(error) => {
                 anyhow::bail!("copilot was not started because of an error: {error}")
             }
@@ -821,7 +821,7 @@ impl Copilot {
         } else {
             // If we're downloading, wait until download is finished
             // If we're in a stuck state, display to the user
-            Task::ready(Err(anyhow!("copilot hasn't started yet")))
+            Task::ready(Err(anyhow!("copilot 尚未启动")))
         }
     }
 
@@ -847,7 +847,7 @@ impl Copilot {
                 clear_copilot_config_dir().await;
                 anyhow::Ok(())
             }),
-            _ => Task::ready(Err(anyhow!("copilot hasn't started yet"))),
+            _ => Task::ready(Err(anyhow!("copilot 尚未启动"))),
         }
     }
 

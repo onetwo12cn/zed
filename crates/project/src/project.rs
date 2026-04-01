@@ -2440,7 +2440,7 @@ impl Project {
         let project_path = project_path.into();
         let Some(worktree) = self.worktree_for_id(project_path.worktree_id, cx) else {
             return Task::ready(Err(anyhow!(format!(
-                "No worktree for path {project_path:?}"
+                "路径 {project_path:?} 没有工作树"
             ))));
         };
         worktree.update(cx, |worktree, cx| {
@@ -2476,7 +2476,7 @@ impl Project {
             .worktree_and_entry_for_id(entry_id, cx)
             .map(|(worktree, entry)| (worktree, entry.path.clone(), entry.is_dir()))
         else {
-            return Task::ready(Err(anyhow!(format!("No worktree for entry {entry_id:?}"))));
+            return Task::ready(Err(anyhow!(format!("入口 {entry_id:?} 没有工作树"))));
         };
 
         let worktree_id = worktree.read(cx).id();
@@ -2589,7 +2589,7 @@ impl Project {
     pub fn shared(&mut self, project_id: u64, cx: &mut Context<Self>) -> Result<()> {
         anyhow::ensure!(
             matches!(self.client_state, ProjectClientState::Local),
-            "project was already shared"
+            "项目已经共享"
         );
 
         self.client_subscriptions.extend([
@@ -2971,7 +2971,7 @@ impl Project {
         if let Some((worktree, relative_path)) = self.find_worktree(abs_path.as_ref(), cx) {
             self.open_buffer_with_lsp((worktree.read(cx).id(), relative_path), cx)
         } else {
-            Task::ready(Err(anyhow!("no such path")))
+            Task::ready(Err(anyhow!("无此路径")))
         }
     }
 

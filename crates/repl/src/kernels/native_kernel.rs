@@ -48,7 +48,7 @@ impl LocalKernelSpecification {
         anyhow::ensure!(argv.len() >= 2, "Invalid argv in kernelspec {}", self.name);
         anyhow::ensure!(
             argv.iter().any(|arg| arg == "{connection_file}"),
-            "Missing 'connection_file' in argv in kernelspec {}",
+            "丢失 kernelspec {} 中的 'connection_file'",
             self.name
         );
 
@@ -140,7 +140,7 @@ impl NativeRunningKernel {
             let runtime_dir = dirs::runtime_dir();
             fs.create_dir(&runtime_dir)
                 .await
-                .with_context(|| format!("Failed to create jupyter runtime dir {runtime_dir:?}"))?;
+                .with_context(|| format!("创建 Jupyter 运行时目录失败 {runtime_dir:?}"))?;
             let connection_path = runtime_dir.join(format!("kernel-zed-{entity_id}.json"));
             let content = serde_json::to_string(&connection_info)?;
             fs.atomic_write(connection_path.clone(), content).await?;
@@ -210,7 +210,7 @@ impl NativeRunningKernel {
                 };
                 let mut lines = futures::stream::select(stderr_lines, stdout_lines);
                 while let Some((level, Ok(line))) = lines.next().await {
-                    log::log!(level, "kernel: {}", line);
+                    log::log!(level, "内核: {}", line);
                 }
             })
             .detach();

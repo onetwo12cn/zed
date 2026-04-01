@@ -131,7 +131,7 @@ impl Github {
         let mut response = client
             .send(request.body(AsyncBody::default())?)
             .await
-            .with_context(|| format!("error fetching GitHub commit details at {:?}", url))?;
+            .with_context(|| format!("获取 GitHub 提交详情失败:{:?}", url))?;
 
         let mut body = Vec::new();
         response.body_mut().read_to_end(&mut body).await?;
@@ -139,7 +139,7 @@ impl Github {
         if response.status().is_client_error() {
             let text = String::from_utf8_lossy(body.as_slice());
             bail!(
-                "status error {}, response: {text:?}",
+                "状态错误 {},响应:{text:?}",
                 response.status().as_u16()
             );
         }
@@ -521,18 +521,18 @@ mod tests {
         };
 
         let github = Github::public_instance();
-        let message = "This does not contain a pull request";
+        let message = "不包含拉取请求";
         assert!(github.extract_pull_request(&remote, message).is_none());
 
         // Pull request number at end of first line
         let message = indoc! {r#"
-            project panel: do not expand collapsed worktrees on "collapse all entries" (#10687)
+            project panel: do not expand collapsed worktrees on "折叠所有条目" (#10687)
 
             Fixes #10597
 
             Release Notes:
 
-            - Fixed "project panel: collapse all entries" expanding collapsed worktrees.
+            - Fixed "项目面板:折叠所有条目" expanding collapsed worktrees.
             "#
         };
 

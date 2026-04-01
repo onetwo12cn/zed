@@ -344,10 +344,10 @@ impl State {
                 .ok_or(AuthenticateError::CredentialsNotFound)?;
 
             let credentials_str = String::from_utf8(credentials_bytes)
-                .with_context(|| format!("invalid {PROVIDER_NAME} credentials"))?;
+                .with_context(|| format!("无效的 {PROVIDER_NAME} 凭证"))?;
 
             let credentials: BedrockCredentials =
-                serde_json::from_str(&credentials_str).context("failed to parse credentials")?;
+                serde_json::from_str(&credentials_str).context("解析凭证失败")?;
 
             let auth = credentials
                 .into_auth()
@@ -607,7 +607,7 @@ impl BedrockModel {
             .cloned()
             .context("Bedrock client not initialized")
         else {
-            return futures::future::ready(Err(BedrockError::Other(anyhow!("App state dropped"))))
+            return futures::future::ready(Err(BedrockError::Other(anyhow!("应用状态丢失"))))
                 .boxed();
         };
 
@@ -1005,7 +1005,7 @@ pub fn into_bedrock(
                 let bedrock_role = match message.role {
                     Role::User => bedrock::BedrockRole::User,
                     Role::Assistant => bedrock::BedrockRole::Assistant,
-                    Role::System => unreachable!("System role should never occur here"),
+                    Role::System => unreachable!("系统角色不应出现在此处"),
                 };
                 if bedrock_message_content.is_empty() {
                     continue;
@@ -1022,7 +1022,7 @@ pub fn into_bedrock(
                         .role(bedrock_role)
                         .set_content(Some(bedrock_message_content))
                         .build()
-                        .context("failed to build Bedrock message")?,
+                        .context("构建 Bedrock 消息失败")?,
                 );
             }
             Role::System => {
@@ -1393,14 +1393,14 @@ impl ConfigurationView {
 
         let access_key_id_editor = cx.new(|cx| {
             InputField::new(window, cx, Self::PLACEHOLDER_ACCESS_KEY_ID_TEXT)
-                .label("Access Key ID")
+                .label("访问密钥 ID")
                 .tab_index(0)
                 .tab_stop(true)
         });
 
         let secret_access_key_editor = cx.new(|cx| {
             InputField::new(window, cx, Self::PLACEHOLDER_SECRET_ACCESS_KEY_TEXT)
-                .label("Secret Access Key")
+                .label("秘密访问密钥")
                 .tab_index(1)
                 .tab_stop(true)
         });
@@ -1423,7 +1423,7 @@ impl ConfigurationView {
             let state = state.clone();
             async move |this, cx| {
                 if let Some(task) = Some(state.update(cx, |state, cx| state.authenticate(cx))) {
-                    // We don't log an error, because "not signed in" is also an error.
+                    // We don't log an error, because "未登录" is also an error.
                     let _ = task.await;
                 }
                 this.update(cx, |this, cx| {
@@ -1548,7 +1548,7 @@ impl Render for ConfigurationView {
             .and_then(|s| s.authentication_method.clone());
 
         if self.load_credentials_task.is_some() {
-            return div().child(Label::new("Loading credentials...")).into_any();
+            return div().child(Label::new("正在加载凭证...")).into_any();
         }
 
         let configured_label = match &auth {
@@ -1629,15 +1629,15 @@ impl Render for ConfigurationView {
                                 "Grant permissions to the strategy you'll use according to the:",
                             ))
                             .child(ButtonLink::new(
-                                "Prerequisites",
+                                "先决条件",
                                 "https://docs.aws.amazon.com/bedrock/latest/userguide/inference-prereq.html",
                             )),
                     )
                     .child(
                         ListBulletItem::new("")
-                            .child(Label::new("Select the models you would like access to:"))
+                            .child(Label::new("选择您想要访问的模型:"))
                             .child(ButtonLink::new(
-                                "Bedrock Model Catalog",
+                                "Bedrock 模型目录",
                                 "https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/model-catalog",
                             )),
                     ),

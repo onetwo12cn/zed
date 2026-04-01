@@ -716,7 +716,7 @@ impl PickerDelegate for TabSwitcherDelegate {
     }
 
     fn no_matches_text(&self, _window: &mut Window, _cx: &mut App) -> Option<SharedString> {
-        Some("No tabs".into())
+        Some("无标签页".into())
     }
 
     fn match_count(&self) -> usize {

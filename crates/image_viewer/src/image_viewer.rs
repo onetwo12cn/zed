@@ -601,14 +601,14 @@ impl SerializableItem for ImageView {
         window.spawn(cx, async move |cx| {
             let image_path = db
                 .get_image_path(item_id, workspace_id)?
-                .context("No image path found")?;
+                .context("未找到图像路径")?;
 
             let (worktree, relative_path) = project
                 .update(cx, |project, cx| {
                     project.find_or_create_worktree(image_path.clone(), false, cx)
                 })
                 .await
-                .context("Path not found")?;
+                .context("路径未找到")?;
             let worktree_id = worktree.update(cx, |worktree, _cx| worktree.id());
 
             let project_path = ProjectPath {

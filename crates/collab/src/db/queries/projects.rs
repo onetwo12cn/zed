@@ -50,16 +50,16 @@ impl Database {
                 )
                 .one(&*tx)
                 .await?
-                .context("could not find participant")?;
+                .context("不能找到参与者")?;
             if participant.room_id != room_id {
-                return Err(anyhow!("shared project on unexpected room"))?;
+                return Err(anyhow!("分享了意外的房间的项目"))?;
             }
             if !participant
                 .role
                 .unwrap_or(ChannelRole::Member)
                 .can_edit_projects()
             {
-                return Err(anyhow!("guests cannot share projects"))?;
+                return Err(anyhow!("访客不能分享项目"))?;
             }
 
             let project = project::ActiveModel {
@@ -136,7 +136,7 @@ impl Database {
             let project = project::Entity::find_by_id(project_id)
                 .one(&*tx)
                 .await?
-                .context("project not found")?;
+                .context("项目未找到")?;
             let room = if let Some(room_id) = project.room_id {
                 Some(self.get_room(room_id, &tx).await?)
             } else {
@@ -145,7 +145,7 @@ impl Database {
             if project.host_connection()? == connection {
                 return Ok((true, room, guest_connection_ids));
             }
-            Err(anyhow!("cannot unshare a project hosted by another user"))?
+            Err(anyhow!("不可以取消共享由另一个用户托管的项目,"))?
         })
         .await
     }
@@ -168,7 +168,7 @@ impl Database {
                 )
                 .one(&*tx)
                 .await?
-                .context("no such project")?;
+                .context("无此项目")?;
 
             self.update_project_worktrees(project.id, worktrees, &tx)
                 .await?;
@@ -230,7 +230,7 @@ impl Database {
             || update.updated_entries.len() > proto::MAX_WORKTREE_UPDATE_MAX_CHUNK_SIZE
         {
             return Err(anyhow!(
-                "invalid worktree update. removed entries: {}, updated entries: {}",
+                "无效工作树更新。已删除条目: {}, 已更新条目: {}",
                 update.removed_entries.len(),
                 update.updated_entries.len()
             ))?;
@@ -250,7 +250,7 @@ impl Database {
                 )
                 .one(&*tx)
                 .await?
-                .with_context(|| format!("no such project: {project_id}"))?;
+                .with_context(|| format!("无此项目: {project_id}"))?;
 
             // Update metadata.
             worktree::Entity::update(worktree::ActiveModel {
@@ -511,15 +511,15 @@ impl Database {
         let project_id = ProjectId::from_proto(update.project_id);
         let worktree_id = update.worktree_id as i64;
         self.project_transaction(project_id, |tx| async move {
-            let summary = update.summary.as_ref().context("invalid summary")?;
+            let summary = update.summary.as_ref().context("无效摘要")?;
 
             // Ensure the update comes from the host.
             let project = project::Entity::find_by_id(project_id)
                 .one(&*tx)
                 .await?
-                .context("no such project")?;
+                .context("无此项目")?;
             if project.host_connection()? != connection {
-                return Err(anyhow!("can't update a project hosted by someone else"))?;
+                return Err(anyhow!("不能更新由其他人托管的项目"))?;
             }
 
             // Update summary.
@@ -561,15 +561,15 @@ impl Database {
     ) -> Result<TransactionGuard<Vec<ConnectionId>>> {
         let project_id = ProjectId::from_proto(update.project_id);
         self.project_transaction(project_id, |tx| async move {
-            let server = update.server.as_ref().context("invalid language server")?;
+            let server = update.server.as_ref().context("无效语言服务器")?;
 
             // Ensure the update comes from the host.
             let project = project::Entity::find_by_id(project_id)
                 .one(&*tx)
                 .await?
-                .context("no such project")?;
+                .context("无此项目")?;
             if project.host_connection()? != connection {
-                return Err(anyhow!("can't update a project hosted by someone else"))?;
+                return Err(anyhow!("不能更新由其他人托管的项目"))?;
             }
 
             // Add the newly-started language server.
@@ -610,7 +610,7 @@ impl Database {
         let project_id = ProjectId::from_proto(update.project_id);
         let kind = match update.kind {
             Some(kind) => proto::LocalSettingsKind::from_i32(kind)
-                .with_context(|| format!("unknown worktree settings kind: {kind}"))?,
+                .with_context(|| format!("未知的工作树设置类型: {kind}"))?,
             None => proto::LocalSettingsKind::Settings,
         };
         let kind = LocalSettingsKind::from_proto(kind);
@@ -619,9 +619,9 @@ impl Database {
             let project = project::Entity::find_by_id(project_id)
                 .one(&*tx)
                 .await?
-                .context("no such project")?;
+                .context("无此项目")?;
             if project.host_connection()? != connection {
-                return Err(anyhow!("can't update a project hosted by someone else"))?;
+                return Err(anyhow!("不能更新由其他人托管的项目"))?;
             }
 
             if let Some(content) = &update.content {
@@ -669,7 +669,7 @@ impl Database {
             Ok(project::Entity::find_by_id(id)
                 .one(&*tx)
                 .await?
-                .context("no such project")?)
+                .context("无此项目")?)
         })
         .await
     }
@@ -1001,13 +1001,13 @@ impl Database {
                 .exec(&*tx)
                 .await?;
             if result.rows_affected == 0 {
-                Err(anyhow!("not a collaborator on this project"))?;
+                Err(anyhow!("不是此项目的合作者"))?;
             }
 
             let project = project::Entity::find_by_id(project_id)
                 .one(&*tx)
                 .await?
-                .context("no such project")?;
+                .context("无此项目")?;
             let collaborators = project
                 .find_related(project_collaborator::Entity)
                 .all(&*tx)
@@ -1076,7 +1076,7 @@ impl Database {
                 )
                 .one(&*tx)
                 .await?
-                .context("failed to read project host")?;
+                .context("读取项目主机失败")?;
 
             Ok(())
         })
@@ -1095,7 +1095,7 @@ impl Database {
         let project = project::Entity::find_by_id(project_id)
             .one(tx)
             .await?
-            .context("no such project")?;
+            .context("无此项目")?;
 
         let role_from_room = if let Some(room_id) = project.room_id {
             room_participant::Entity::find()
@@ -1113,12 +1113,12 @@ impl Database {
         match capability {
             Capability::ReadWrite => {
                 if !role.can_edit_projects() {
-                    return Err(anyhow!("not authorized to edit projects"))?;
+                    return Err(anyhow!("无权编辑项目"))?;
                 }
             }
             Capability::ReadOnly => {
                 if !role.can_read_projects() {
-                    return Err(anyhow!("not authorized to read projects"))?;
+                    return Err(anyhow!("无权读取项目"))?;
                 }
             }
         }
@@ -1220,7 +1220,7 @@ impl Database {
         let project = project::Entity::find_by_id(project_id)
             .one(tx)
             .await?
-            .context("no such project")?;
+            .context("无此项目")?;
 
         let mut collaborators = project_collaborator::Entity::find()
             .filter(project_collaborator::Column::ProjectId.eq(project_id))
@@ -1245,7 +1245,7 @@ impl Database {
             Ok(connection_ids)
         } else {
             Err(anyhow!(
-                "can only send project updates to a project you're in"
+                "只能向您所在的项目发送项目更新"
             ))?
         }
     }
@@ -1308,7 +1308,7 @@ impl Database {
                 .await?;
 
             if count < 2 {
-                Err(anyhow!("not room participants"))?;
+                Err(anyhow!("不是房间参与者"))?;
             }
 
             Ok(())

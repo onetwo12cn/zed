@@ -57,7 +57,7 @@ pub fn init(cx: &mut App) {
 
                     cx.prompt(
                         PromptLevel::Info,
-                        "Copied into clipboard",
+                        "复制到剪贴板",
                         Some(&specs),
                         &["OK"],
                     )

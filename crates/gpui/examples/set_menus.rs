@@ -18,7 +18,7 @@ impl Render for SetMenus {
             .items_center()
             .text_xl()
             .text_color(gpui::black())
-            .child("Set Menus Example")
+            .child("设置菜单示例")
     }
 }
 
@@ -108,7 +108,7 @@ fn set_app_menus(cx: &mut App) {
             ]),
         ),
         MenuItem::separator(),
-        MenuItem::action("Quit", Quit),
+        MenuItem::action("退出", Quit),
     ])]);
 }
 

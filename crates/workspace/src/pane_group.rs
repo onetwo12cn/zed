@@ -402,24 +402,24 @@ impl PaneLeaderDecorator for PaneRenderContext<'_> {
                         if Some(leader_project_id) == self.project.read(cx).remote_id() {
                             is_in_unshared_view.then(|| {
                                 Label::new(format!(
-                                    "{} is in an unshared pane",
+                                    "{} 在一个未共享的窗格中",
                                     leader.user.github_login
                                 ))
                             })
                         } else {
                             leader_join_data = Some((leader_project_id, leader.user.id));
                             Some(Label::new(format!(
-                                "Follow {} to their active project",
+                                "跟随 {} 到他们的活动项目",
                                 leader.user.github_login,
                             )))
                         }
                     }
                     ParticipantLocation::UnsharedProject => Some(Label::new(format!(
-                        "{} is viewing an unshared Zed project",
+                        "{} 正在查看一个未共享的 AIReach 项目",
                         leader.user.github_login
                     ))),
                     ParticipantLocation::External => Some(Label::new(format!(
-                        "{} is viewing a window outside of Zed",
+                        "{} 正在查看 AIReach 之外的窗口",
                         leader.user.github_login
                     ))),
                 };
@@ -719,7 +719,7 @@ impl PaneAxis {
                 Ok(None)
             }
         } else {
-            anyhow::bail!("Pane not found");
+            anyhow::bail!("未找到页面");
         }
     }
 

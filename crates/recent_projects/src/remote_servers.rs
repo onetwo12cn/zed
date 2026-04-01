@@ -360,7 +360,7 @@ impl EditNicknameState {
             .and_then(|state| state.nickname)
             .filter(|text| !text.is_empty());
         this.editor.update(cx, |this, cx| {
-            this.set_placeholder_text("Add a nickname for this server", window, cx);
+            this.set_placeholder_text("给服务器添加昵称", window, cx);
             if let Some(starting_text) = starting_text {
                 this.set_text(starting_text, window, cx);
             }
@@ -964,7 +964,7 @@ impl RemoteServerProjects {
             Err(e) => {
                 self.mode = Mode::CreateRemoteServer(CreateRemoteServer {
                     address_editor: editor,
-                    address_error: Some(format!("could not parse: {:?}", e).into()),
+                    address_error: Some(format!("不能解析: {:?}", e).into()),
                     ssh_prompt: None,
                     _creating: None,
                 });
@@ -989,7 +989,7 @@ impl RemoteServerProjects {
             window,
             cx,
         )
-        .prompt_err("Failed to connect", window, cx, |_, _, _| None);
+        .prompt_err("连接失败", window, cx, |_, _, _| None);
 
         let address_editor = editor.clone();
         let creating = cx.spawn_in(window, async move |this, cx| {
@@ -1064,7 +1064,7 @@ impl RemoteServerProjects {
             window,
             cx,
         )
-        .prompt_err("Failed to connect", window, cx, |_, _, _| None);
+        .prompt_err("连接失败", window, cx, |_, _, _| None);
 
         let wsl_picker = picker.clone();
         let creating = cx.spawn_in(window, async move |this, cx| {
@@ -1177,7 +1177,7 @@ impl RemoteServerProjects {
                     window,
                     cx,
                 )
-                .prompt_err("Failed to connect", window, cx, |_, _, _| None);
+                .prompt_err("连接失败", window, cx, |_, _, _| None);
 
                 cx.spawn_in(window, async move |workspace, cx| {
                     let session = connect.await;
@@ -1385,7 +1385,7 @@ impl RemoteServerProjects {
                 } => {
                     let index = *index;
                     List::new()
-                        .empty_message("No projects.")
+                        .empty_message("无项目")
                         .children(projects.iter().enumerate().map(|(pix, p)| {
                             v_flex().gap_0p5().child(self.render_remote_project(
                                 index,
@@ -1420,7 +1420,7 @@ impl RemoteServerProjects {
                                         .inset(true)
                                         .spacing(ui::ListItemSpacing::Sparse)
                                         .start_slot(Icon::new(IconName::Plus).color(Color::Muted))
-                                        .child(Label::new("Open Folder"))
+                                        .child(Label::new("打开文件夹"))
                                         .on_click(cx.listener({
                                             let connection = connection.clone();
                                             move |this, _, window, cx| {
@@ -1459,7 +1459,7 @@ impl RemoteServerProjects {
                                         .start_slot(
                                             Icon::new(IconName::Settings).color(Color::Muted),
                                         )
-                                        .child(Label::new("View Server Options"))
+                                        .child(Label::new("查看服务器选项"))
                                         .on_click(cx.listener({
                                             let ssh_connection = connection.clone();
                                             move |this, _, window, cx| {
@@ -1497,7 +1497,7 @@ impl RemoteServerProjects {
                                 .inset(true)
                                 .spacing(ui::ListItemSpacing::Sparse)
                                 .start_slot(Icon::new(IconName::Plus).color(Color::Muted))
-                                .child(Label::new("Open Folder"))
+                                .child(Label::new("打开文件夹"))
                                 .on_click(cx.listener({
                                     let host = host.clone();
                                     move |this, _, window, cx| {
@@ -1576,7 +1576,7 @@ impl RemoteServerProjects {
                         log::error!("Failed to connect: {e:#}");
                         cx.prompt(
                             gpui::PromptLevel::Critical,
-                            "Failed to connect",
+                            "连接失败",
                             Some(&e.to_string()),
                             &["Ok"],
                         )
@@ -1631,7 +1631,7 @@ impl RemoteServerProjects {
                                         .icon_size(IconSize::Small)
                                         .shape(IconButtonShape::Square)
                                         .size(ButtonSize::Large)
-                                        .tooltip(Tooltip::text("Delete Remote Project"))
+                                        .tooltip(Tooltip::text("删除远程项目"))
                                         .on_click(cx.listener(move |this, _, _, cx| {
                                             this.delete_remote_project(server_ix, &project, cx)
                                         }))
@@ -1904,7 +1904,7 @@ impl RemoteServerProjects {
                 log::error!("Failed to connect: {e:#}");
                 cx.prompt(
                     gpui::PromptLevel::Critical,
-                    "Failed to connect",
+                    "连接失败",
                     Some(&e.to_string()),
                     &["Ok"],
                 )
@@ -2111,7 +2111,7 @@ impl RemoteServerProjects {
                                     .gap_1()
                                     .child(
                                         Label::new(
-                                            "Enter the command you use to SSH into this server.",
+                                            "键入您用于 SSH 到此服务器的命令。",
                                         )
                                         .color(Color::Muted)
                                         .size(LabelSize::Small),
@@ -2242,7 +2242,7 @@ impl RemoteServerProjects {
                                         .start_slot(
                                             Icon::new(IconName::ArrowLeft).color(Color::Muted),
                                         )
-                                        .child(Label::new("Go Back"))
+                                        .child(Label::new("返回"))
                                         .on_click(cx.listener(|this, _, window, cx| {
                                             this.mode =
                                                 Mode::default_mode(&this.ssh_config_servers, cx);
@@ -2286,7 +2286,7 @@ impl RemoteServerProjects {
                     PromptLevel::Warning,
                     &prompt_message,
                     None,
-                    &["Yes, remove it", "No, keep it"],
+                    &["是,删除", "不,保留"],
                     cx,
                 );
 
@@ -2342,9 +2342,9 @@ impl RemoteServerProjects {
         v_flex()
             .child({
                 let label = if connection.nickname.is_some() {
-                    "Edit Nickname"
+                    "编辑昵称"
                 } else {
-                    "Add Nickname to Server"
+                    "添加服务器昵称"
                 };
                 div()
                     .id("ssh-options-add-nickname")
@@ -2379,7 +2379,7 @@ impl RemoteServerProjects {
                         .update(cx, |this, cx| {
                             struct SshServerAddressCopiedToClipboard;
                             let notification = format!(
-                                "Copied server address ({}) to clipboard",
+                                "复制服务器地址 ({}) 到剪贴板",
                                 connection_string
                             );
 
@@ -2412,7 +2412,7 @@ impl RemoteServerProjects {
                             .inset(true)
                             .spacing(ui::ListItemSpacing::Sparse)
                             .start_slot(Icon::new(IconName::Copy).color(Color::Muted))
-                            .child(Label::new("Copy Server Address"))
+                            .child(Label::new("复制服务器地址"))
                             .end_hover_slot(
                                 Label::new(connection_string.clone()).color(Color::Muted),
                             )
@@ -2432,13 +2432,13 @@ impl RemoteServerProjects {
                     window: &mut Window,
                     cx: &mut App,
                 ) {
-                    let prompt_message = format!("Remove server `{}`?", connection_string);
+                    let prompt_message = format!("远程服务器 `{}`?", connection_string);
 
                     let confirmation = window.prompt(
                         PromptLevel::Warning,
                         &prompt_message,
                         None,
-                        &["Yes, remove it", "No, keep it"],
+                        &["是,删除", "不,保留"],
                         cx,
                     );
 
@@ -2478,7 +2478,7 @@ impl RemoteServerProjects {
                             .inset(true)
                             .spacing(ui::ListItemSpacing::Sparse)
                             .start_slot(Icon::new(IconName::Trash).color(Color::Error))
-                            .child(Label::new("Remove Server").color(Color::Error))
+                            .child(Label::new("删除服务器").color(Color::Error))
                             .on_click(cx.listener(move |_, _, window, cx| {
                                 remove_ssh_server(
                                     cx.entity(),
@@ -2726,7 +2726,7 @@ impl RemoteServerProjects {
                                 .border_t_1()
                                 .border_color(cx.theme().colors().border_variant)
                                 .child(
-                                    Label::new("No remote servers registered yet.")
+                                    Label::new("无远程服务器注册")
                                         .color(Color::Muted),
                                 )
                                 .into_any_element(),

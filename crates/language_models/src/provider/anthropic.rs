@@ -1016,7 +1016,7 @@ impl ConfigurationView {
             let state = state.clone();
             async move |this, cx| {
                 let task = state.update(cx, |state, cx| state.authenticate(cx));
-                // We don't log an error, because "not signed in" is also an error.
+                // We don't log an error, because "未登录" is also an error.
                 let _ = task.await;
                 this.update(cx, |this, cx| {
                     this.load_credentials_task = None;
@@ -1087,7 +1087,7 @@ impl Render for ConfigurationView {
 
         if self.load_credentials_task.is_some() {
             div()
-                .child(Label::new("Loading credentials..."))
+                .child(Label::new("加载凭据中..."))
                 .into_any_element()
         } else if self.should_render_editor(cx) {
             v_flex()

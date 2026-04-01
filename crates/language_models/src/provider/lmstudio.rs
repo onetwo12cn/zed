@@ -883,7 +883,7 @@ impl Render for ConfigurationView {
             .child(
                 v_flex()
                     .gap_1()
-                    .child(Label::new("Run local LLMs like Llama, Phi, and Qwen."))
+                    .child(Label::new("运行本地LLM,如Llama、Phi和Qwen。"))
                     .child(
                         List::new()
                             .child(ListBulletItem::new(
@@ -891,7 +891,7 @@ impl Render for ConfigurationView {
                             ))
                             .child(
                                 ListBulletItem::new("")
-                                    .child(Label::new("To get your first model, try running"))
+                                    .child(Label::new("要获取您的第一个模型,请尝试运行"))
                                     .child(Label::new("lms get qwen2.5-coder-7b").inline_code(cx)),
                             ),
                     )
@@ -930,7 +930,7 @@ impl Render for ConfigurationView {
                                     this.child(
                                         Button::new(
                                             "download_lmstudio_button",
-                                            "Download LM Studio",
+                                            "下载 LM Studio",
                                         )
                                         .style(ButtonStyle::Subtle)
                                         .end_icon(
@@ -946,7 +946,7 @@ impl Render for ConfigurationView {
                                 }
                             })
                             .child(
-                                Button::new("view-models", "Model Catalog")
+                                Button::new("view-models", "模型目录")
                                     .style(ButtonStyle::Subtle)
                                     .end_icon(
                                         Icon::new(IconName::ArrowUpRight)
@@ -968,7 +968,7 @@ impl Render for ConfigurationView {
                                         h_flex()
                                             .gap_2()
                                             .child(Icon::new(IconName::Check).color(Color::Success))
-                                            .child(Label::new("Connected"))
+                                            .child(Label::new("已连接"))
                                             .into_any_element(),
                                     )
                                     .child(
@@ -984,7 +984,7 @@ impl Render for ConfigurationView {
                             )
                         } else {
                             this.child(
-                                Button::new("retry_lmstudio_models", "Connect")
+                                Button::new("retry_lmstudio_models", "连接")
                                     .start_icon(
                                         Icon::new(IconName::PlayFilled).size(IconSize::XSmall),
                                     )

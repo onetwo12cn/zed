@@ -1012,7 +1012,7 @@ impl Contact {
 impl Collaborator {
     pub fn from_proto(message: proto::Collaborator) -> Result<Self> {
         Ok(Self {
-            peer_id: message.peer_id.context("invalid peer id")?,
+            peer_id: message.peer_id.context("无效对等 ID")?,
             replica_id: ReplicaId::new(message.replica_id as u16),
             user_id: message.user_id as UserId,
             is_host: message.is_host,

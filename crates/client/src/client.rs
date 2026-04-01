@@ -227,7 +227,7 @@ pub struct Client {
 
 #[derive(Error, Debug)]
 pub enum EstablishConnectionError {
-    #[error("upgrade required")]
+    #[error("需要升级")]
     UpgradeRequired,
     #[error("unauthorized")]
     Unauthorized,
@@ -1114,11 +1114,11 @@ impl Client {
                 .downcast::<TypedEnvelope<proto::Hello>>()
                 .map_err(|_| {
                     anyhow!(
-                        "invalid hello message received: {:?}",
+                        "无效 hello 消息接收: {:?}",
                         hello_message_type_name
                     )
                 })?;
-            let peer_id = hello.payload.peer_id.context("invalid peer id")?;
+            let peer_id = hello.payload.peer_id.context("无效对等 ID")?;
             Ok(peer_id)
         };
 
@@ -1216,7 +1216,7 @@ impl Client {
             }
 
             if let Some(url) = &*ZED_RPC_URL {
-                return Url::parse(url).context("invalid rpc url");
+                return Url::parse(url).context("无效 rpc url");
             }
 
             let mut url = http.build_url("/rpc");
@@ -1547,7 +1547,7 @@ impl Client {
         if let Status::Connected { connection_id, .. } = *self.status().borrow() {
             Ok(connection_id)
         } else {
-            anyhow::bail!("not connected");
+            anyhow::bail!("未连接");
         }
     }
 

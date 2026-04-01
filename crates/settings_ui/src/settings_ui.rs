@@ -3522,7 +3522,7 @@ impl SettingsWindow {
                             .take(item_index)
                             .rev()
                             .find_map(|item| item.header_text().map(SharedString::new_static))
-                            .unwrap_or_else(|| "Settings".into());
+                            .unwrap_or_else(|| "设置".into());
 
                         self.push_sub_page(sub_page_link.clone(), section_header, window, cx);
                         return true;

@@ -378,7 +378,7 @@ impl ActivityIndicator {
 
                 let additional_work_count = pending_work.count();
                 if additional_work_count > 0 {
-                    write!(&mut message, " + {} more", additional_work_count).unwrap();
+                    write!(&mut message, " + {} 更多", additional_work_count).unwrap();
                 }
 
                 return Some(Content {
@@ -507,7 +507,7 @@ impl ActivityIndicator {
                         .into_any_element(),
                 ),
                 message: format!(
-                    "Downloading {}...",
+                    "下载 {}...",
                     downloading.iter().map(|name| name.as_ref()).fold(
                         String::new(),
                         |mut acc, s| {
@@ -536,7 +536,7 @@ impl ActivityIndicator {
                         .into_any_element(),
                 ),
                 message: format!(
-                    "Checking for updates to {}...",
+                    "检查 {} 的更新...",
                     checking_for_update.iter().map(|name| name.as_ref()).fold(
                         String::new(),
                         |mut acc, s| {
@@ -565,7 +565,7 @@ impl ActivityIndicator {
                         .into_any_element(),
                 ),
                 message: format!(
-                    "Failed to run {}. Click to show error.",
+                    "{} 运行失败。点击显示错误。",
                     failed
                         .iter()
                         .map(|name| name.as_ref())
@@ -666,7 +666,7 @@ impl ActivityIndicator {
                     true,
                 ),
                 ExtensionOperation::Upgrade => (
-                    format!("Updating {extension_id} extension…"),
+                    format!("更新 {extension_id} 扩展中…"),
                     IconName::Download,
                     false,
                 ),

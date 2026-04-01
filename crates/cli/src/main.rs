@@ -1366,7 +1366,7 @@ mod mac_os {
             .output()?;
         if !app_path_output.status.success() {
             bail!(
-                "Could not determine app path for {}",
+                "无法确定 {} 的应用程序路径",
                 channel.display_name()
             );
         }

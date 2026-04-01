@@ -2394,7 +2394,7 @@ impl LocalLspStore {
                 if let Some(buffer_abs_path) = buffer.abs_path.as_ref() {
                     arg.replace("{buffer_path}", &buffer_abs_path.to_string_lossy())
                 } else {
-                    arg.replace("{buffer_path}", "Untitled")
+                    arg.replace("{buffer_path}", "未命名")
                 }
             }));
         }

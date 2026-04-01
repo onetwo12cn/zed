@@ -70,7 +70,7 @@ impl Gitlab {
         }
 
         Ok(Self::new(
-            "GitLab Self-Hosted",
+            "GitLab 自托管",
             Url::parse(&format!("https://{}", host))?,
         ))
     }
@@ -509,7 +509,7 @@ mod tests {
         );
 
         let base_url = Url::parse("https://gitlab.zed.com").unwrap();
-        let github = Gitlab::new("GitLab Self-Hosted", base_url);
+        let github = Gitlab::new("GitLab 自托管", base_url);
         let url = github
             .build_create_pull_request_url(&remote, "feature/new-feature")
             .expect("should be able to build pull request url");
@@ -564,7 +564,7 @@ mod tests {
     #[test]
     fn test_extract_merge_request_self_hosted() {
         let base_url = Url::parse("https://gitlab.my-company.com").unwrap();
-        let provider = Gitlab::new("GitLab Self-Hosted", base_url);
+        let provider = Gitlab::new("GitLab 自托管", base_url);
 
         let remote = ParsedGitRemote {
             owner: "team".into(),

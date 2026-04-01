@@ -919,7 +919,7 @@ impl Item for Editor {
             .buffer()
             .read(cx)
             .as_singleton()
-            .expect("cannot call save_as on an excerpt list");
+            .expect("不能在摘要列表上调用 save_as");
 
         let file_extension = path.path.extension().map(|a| a.to_string());
         self.report_editor_event(
@@ -1128,7 +1128,7 @@ impl Item for Editor {
 
 impl SerializableItem for Editor {
     fn serialized_item_kind() -> &'static str {
-        "Editor"
+        "编辑器"
     }
 
     fn cleanup(
@@ -1156,7 +1156,7 @@ impl SerializableItem for Editor {
     ) -> Task<Result<Entity<Self>>> {
         let serialized_editor = match EditorDb::global(cx)
             .get_serialized_editor(item_id, workspace_id)
-            .context("Failed to query editor state")
+            .context("查询编辑器状态失败")
         {
             Ok(Some(serialized_editor)) => {
                 if ProjectSettings::get_global(cx)
@@ -1389,10 +1389,10 @@ impl SerializableItem for Editor {
                 log::debug!("Serializing editor {item_id:?} in workspace {workspace_id:?}");
                 db.save_serialized_editor(item_id, workspace_id, editor)
                     .await
-                    .context("failed to save serialized editor")
+                    .context("保存序列化编辑器失败")
             })
             .await
-            .context("failed to save contents of buffer")?;
+            .context("保存缓冲区内容失败")?;
 
             Ok(())
         }))
@@ -1423,7 +1423,7 @@ impl ProjectItem for Editor {
     type Item = Buffer;
 
     fn project_item_kind() -> Option<ProjectItemKind> {
-        Some(ProjectItemKind("Editor"))
+        Some(ProjectItemKind("编辑器"))
     }
 
     fn for_project_item(

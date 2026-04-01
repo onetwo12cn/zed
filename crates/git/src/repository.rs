@@ -955,7 +955,7 @@ impl RealGitRepository {
         self.repository
             .lock()
             .workdir()
-            .context("failed to read git work directory")
+            .context("读取 git 工作目录失败")
             .map(Path::to_path_buf)
     }
 

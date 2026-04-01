@@ -173,7 +173,7 @@ impl Workspace {
         self.show_notification(NotificationId::unique::<PortalError>(), cx, |cx| {
             cx.new(|cx| {
                 ErrorMessagePrompt::new(err.to_string(), cx).with_link_button(
-                    "See docs",
+                    "查看文档",
                     "https://zed.dev/docs/linux#i-cant-open-any-files",
                 )
             })
@@ -364,7 +364,7 @@ impl Render for LanguageServerPrompt {
                                             "copy-description",
                                             request.message.clone(),
                                         )
-                                        .tooltip_label("Copy Description"),
+                                        .tooltip_label("复制描述"),
                                     )
                                     .child(
                                         IconButton::new(close_id, close_icon)

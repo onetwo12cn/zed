@@ -910,13 +910,13 @@ fn npm_command_env(node_binary: Option<&Path>) -> HashMap<String, String> {
     #[cfg(windows)]
     {
         if let Some(val) = env::var("SYSTEMROOT")
-            .context("Missing environment variable: SYSTEMROOT!")
+            .context("丢失环境变量:SYSTEMROOT!")
             .log_err()
         {
             command_env.insert("SYSTEMROOT".into(), val);
         }
         if let Some(val) = env::var("ComSpec")
-            .context("Missing environment variable: ComSpec!")
+            .context("丢失环境变量:ComSpec!")
             .log_err()
         {
             command_env.insert("ComSpec".into(), val);

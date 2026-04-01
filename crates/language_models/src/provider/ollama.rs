@@ -962,7 +962,7 @@ impl Render for ConfigurationView {
                                     )
                                 } else {
                                     this.child(
-                                        Button::new("download_ollama_button", "Download Ollama")
+                                        Button::new("download_ollama_button", "下载 Ollama")
                                             .style(ButtonStyle::Subtle)
                                             .end_icon(
                                                 Icon::new(IconName::ArrowUpRight)
@@ -997,7 +997,7 @@ impl Render for ConfigurationView {
                                         h_flex()
                                             .gap_2()
                                             .child(Icon::new(IconName::Check).color(Color::Success))
-                                            .child(Label::new("Connected"))
+                                            .child(Label::new("已连接"))
                                             .into_any_element(),
                                     )
                                     .child(
@@ -1013,7 +1013,7 @@ impl Render for ConfigurationView {
                             )
                         } else {
                             this.child(
-                                Button::new("retry_ollama_models", "Connect")
+                                Button::new("retry_ollama_models", "连接")
                                     .start_icon(
                                         Icon::new(IconName::PlayOutlined).size(IconSize::XSmall),
                                     )

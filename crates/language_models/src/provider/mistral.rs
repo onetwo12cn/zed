@@ -758,7 +758,7 @@ impl ConfigurationView {
             let state = state.clone();
             async move |this, cx| {
                 if let Some(task) = Some(state.update(cx, |state, cx| state.authenticate(cx))) {
-                    // We don't log an error, because "not signed in" is also an error.
+                    // We don't log an error, because "未登录" is also an error.
                     let _ = task.await;
                 }
 
@@ -829,7 +829,7 @@ impl Render for ConfigurationView {
         };
 
         if self.load_credentials_task.is_some() {
-            div().child(Label::new("Loading credentials...")).into_any()
+            div().child(Label::new("正在加载凭证...")).into_any()
         } else if self.should_render_api_key_editor(cx) {
             v_flex()
                 .size_full()
@@ -839,14 +839,14 @@ impl Render for ConfigurationView {
                     List::new()
                         .child(
                             ListBulletItem::new("")
-                                .child(Label::new("Create one by visiting"))
-                                .child(ButtonLink::new("Mistral's console", "https://console.mistral.ai/api-keys"))
+                                .child(Label::new("通过访问创建一个"))
+                                .child(ButtonLink::new("Mistral 的控制台", "https://console.mistral.ai/api-keys"))
                         )
                         .child(
-                            ListBulletItem::new("Ensure your Mistral account has credits")
+                            ListBulletItem::new("确保您的 Mistral 账户有余额")
                         )
                         .child(
-                            ListBulletItem::new("Paste your API key below and hit enter to start using the assistant")
+                            ListBulletItem::new("在下方粘贴您的 API 密钥并按回车键以开始使用助手")
                         ),
                 )
                 .child(self.api_key_editor.clone())

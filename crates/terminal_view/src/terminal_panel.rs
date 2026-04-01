@@ -158,7 +158,7 @@ impl TerminalPanel {
                         PopoverMenu::new("terminal-tab-bar-popover-menu")
                             .trigger_with_tooltip(
                                 IconButton::new("plus", IconName::Plus).icon_size(IconSize::Small),
-                                Tooltip::text("New…"),
+                                Tooltip::text("新建…"),
                             )
                             .anchor(Corner::TopRight)
                             .with_handle(pane.new_item_context_menu_handle.clone())
@@ -167,7 +167,7 @@ impl TerminalPanel {
                                 let menu = ContextMenu::build(window, cx, |menu, _, _| {
                                     menu.context(focus_handle.clone())
                                         .action(
-                                            "New Terminal",
+                                            "新建终端",
                                             workspace::NewTerminal::default().boxed_clone(),
                                         )
                                         // We want the focus to go back to terminal panel once task modal is dismissed,
@@ -188,7 +188,7 @@ impl TerminalPanel {
                             .trigger_with_tooltip(
                                 IconButton::new("terminal-pane-split", IconName::Split)
                                     .icon_size(IconSize::Small),
-                                Tooltip::text("Split Pane"),
+                                Tooltip::text("分割窗格"),
                             )
                             .anchor(Corner::TopRight)
                             .with_handle(pane.split_item_context_menu_handle.clone())
@@ -199,10 +199,10 @@ impl TerminalPanel {
                                             split_context.clone(),
                                             |menu, split_context| menu.context(split_context),
                                         )
-                                        .action("Split Right", SplitRight::default().boxed_clone())
-                                        .action("Split Left", SplitLeft::default().boxed_clone())
-                                        .action("Split Up", SplitUp::default().boxed_clone())
-                                        .action("Split Down", SplitDown::default().boxed_clone())
+                                        .action("向右分割", SplitRight::default().boxed_clone())
+                                        .action("向左分割", SplitLeft::default().boxed_clone())
+                                        .action("向上分割", SplitUp::default().boxed_clone())
+                                        .action("向下分割", SplitDown::default().boxed_clone())
                                     })
                                     .into()
                                 }
@@ -219,7 +219,7 @@ impl TerminalPanel {
                             }))
                             .tooltip(move |_window, cx| {
                                 Tooltip::for_action(
-                                    if zoomed { "Zoom Out" } else { "Zoom In" },
+                                    if zoomed { "缩小" } else { "放大" },
                                     &ToggleZoom,
                                     cx,
                                 )
@@ -1656,7 +1656,7 @@ impl Panel for TerminalPanel {
     }
 
     fn icon_tooltip(&self, _window: &Window, _cx: &App) -> Option<&'static str> {
-        Some("Terminal Panel")
+        Some("终端面板")
     }
 
     fn toggle_action(&self) -> Box<dyn gpui::Action> {
@@ -1716,7 +1716,7 @@ impl Render for InlineAssistTabBarButton {
                 window.dispatch_action(InlineAssist::default().boxed_clone(), cx);
             }))
             .tooltip(move |_window, cx| {
-                Tooltip::for_action_in("Inline Assist", &InlineAssist::default(), &focus_handle, cx)
+                Tooltip::for_action_in("内联助手", &InlineAssist::default(), &focus_handle, cx)
             })
     }
 }

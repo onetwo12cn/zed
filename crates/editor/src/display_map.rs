@@ -2889,7 +2889,7 @@ pub mod tests {
                 log::info!("Moving from point {:?}", point);
 
                 let moved_right = movement::right(&snapshot, point);
-                log::info!("Right {:?}", moved_right);
+                log::info!("右 {:?}", moved_right);
                 if point < max_point {
                     assert!(moved_right > point);
                     if point.column() == snapshot.line_len(point.row())
@@ -2903,7 +2903,7 @@ pub mod tests {
                 }
 
                 let moved_left = movement::left(&snapshot, point);
-                log::info!("Left {:?}", moved_left);
+                log::info!("左 {:?}", moved_left);
                 if point > min_point {
                     assert!(moved_left < point);
                     if point.column() == 0 {

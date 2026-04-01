@@ -374,7 +374,7 @@ impl PickerDelegate for CommandPaletteDelegate {
     type ListItem = ListItem;
 
     fn placeholder_text(&self, _window: &mut Window, _cx: &mut App) -> Arc<str> {
-        "Execute a command...".into()
+        "执行命令...".into()
     }
 
     fn select_history(
@@ -581,7 +581,7 @@ impl PickerDelegate for CommandPaletteDelegate {
         let action_ix = self.matches[self.selected_ix].candidate_id;
         let command = self.commands.swap_remove(action_ix);
         telemetry::event!(
-            "Action Invoked",
+            "操作已调用",
             source = "command palette",
             action = command.name
         );
@@ -714,7 +714,7 @@ pub fn humanize_action_name(name: &str) -> String {
 
 impl std::fmt::Debug for Command {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Command")
+        f.debug_struct("命令")
             .field("name", &self.name)
             .finish_non_exhaustive()
     }

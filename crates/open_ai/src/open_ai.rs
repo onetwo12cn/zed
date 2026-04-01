@@ -38,7 +38,7 @@ impl TryFrom<String> for Role {
             "assistant" => Ok(Self::Assistant),
             "system" => Ok(Self::System),
             "tool" => Ok(Self::Tool),
-            _ => anyhow::bail!("invalid role '{value}'"),
+            _ => anyhow::bail!("无效的角色 '{value}'"),
         }
     }
 }

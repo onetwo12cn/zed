@@ -189,16 +189,16 @@ impl Drop for MacOsUnmounter<'_> {
                     .await;
                 match unmount_output {
                     Ok(output) if output.status.success() => {
-                        log::info!("Successfully unmounted the disk image");
+                        log::info!("成功卸载磁盘映像");
                     }
                     Ok(output) => {
                         log::error!(
-                            "Failed to unmount disk image: {:?}",
+                            "卸载磁盘映像失败: {:?}",
                             String::from_utf8_lossy(&output.stderr)
                         );
                     }
                     Err(error) => {
-                        log::error!("Error while trying to unmount disk image: {:?}", error);
+                        log::error!("尝试卸载磁盘映像时出错: {:?}", error);
                     }
                 }
             })
@@ -273,7 +273,7 @@ pub fn check(_: &Check, window: &mut Window, cx: &mut App) {
     {
         drop(window.prompt(
             gpui::PromptLevel::Info,
-            "Zed was installed via a package manager.",
+            "已通过包管理器安装 AIReach。",
             Some(&message),
             &["Ok"],
             cx,
@@ -293,8 +293,8 @@ pub fn check(_: &Check, window: &mut Window, cx: &mut App) {
     } else {
         drop(window.prompt(
             gpui::PromptLevel::Info,
-            "Could not check for updates",
-            Some("Auto-updates disabled for non-bundled app."),
+            "不能检查更新",
+            Some("禁用非捆绑应用的自动更新。"),
             &["Ok"],
             cx,
         ));
@@ -467,7 +467,7 @@ impl AutoUpdater {
                             AutoUpdateStatus::Idle
                         }
                         UpdateCheckType::Manual => {
-                            log::error!("auto-update failed: error:{:?}", error);
+                            log::error!("自动更新失败: 错误:{:?}", error);
                             AutoUpdateStatus::Errored {
                                 error: Arc::new(error),
                             }
@@ -513,7 +513,7 @@ impl AutoUpdater {
             cx.default_global::<GlobalAutoUpdate>()
                 .0
                 .clone()
-                .context("auto-update not initialized")
+                .context("auto-update 未初始化")
         })?;
 
         set_status("Fetching remote server release", cx);
@@ -538,7 +538,7 @@ impl AutoUpdater {
 
         if smol::fs::metadata(&version_path).await.is_err() {
             log::info!(
-                "downloading zed-remote-server {os} {arch} version {}",
+                "下载 zed-remote-server {os} {arch} 版本 {}",
                 release.version
             );
             set_status("Downloading remote server", cx);
@@ -569,7 +569,7 @@ impl AutoUpdater {
             cx.default_global::<GlobalAutoUpdate>()
                 .0
                 .clone()
-                .context("auto-update not initialized")
+                .context("auto-update 未初始化")
         })?;
 
         let release =
@@ -630,13 +630,13 @@ impl AutoUpdater {
 
         anyhow::ensure!(
             response.status().is_success(),
-            "failed to fetch release: {:?}",
+            "获取发行版失败: {:?}",
             String::from_utf8_lossy(&body),
         );
 
         serde_json::from_slice(body.as_slice()).with_context(|| {
             format!(
-                "error deserializing release {:?}",
+                "反序列化发行版时出错:{:?}",
                 String::from_utf8_lossy(&body),
             )
         })
@@ -878,7 +878,7 @@ async fn download_remote_server_binary(
     let mut response = client.get(&release.url, Default::default(), true).await?;
     anyhow::ensure!(
         response.status().is_success(),
-        "failed to download remote server release: {:?}",
+        "下载远程服务器版本失败: {:?}",
         response.status()
     );
     smol::io::copy(response.body_mut(), &mut temp_file).await?;
@@ -958,7 +958,7 @@ async fn download_release(
         response.status()
     );
     smol::io::copy(response.body_mut(), &mut target_file).await?;
-    log::info!("downloaded update. path:{:?}", target_path);
+    log::info!("下载更新。路径:{:?}", target_path);
 
     Ok(())
 }
@@ -969,13 +969,13 @@ async fn install_release_linux(
     cx: &AsyncApp,
 ) -> Result<Option<PathBuf>> {
     let channel = cx.update(|cx| ReleaseChannel::global(cx).dev_name());
-    let home_dir = PathBuf::from(env::var("HOME").context("no HOME env var set")?);
+    let home_dir = PathBuf::from(env::var("HOME").context("未设置 HOME 环境变量")?);
     let running_app_path = cx.update(|cx| cx.app_path())?;
 
     let extracted = temp_dir.path().join("zed");
     fs::create_dir_all(&extracted)
         .await
-        .context("failed to create directory into which to extract update")?;
+        .context("无法创建用于提取更新的目录")?;
 
     let mut cmd = new_command("tar");
     cmd.arg("-xzf")
@@ -989,7 +989,7 @@ async fn install_release_linux(
 
     anyhow::ensure!(
         output.status.success(),
-        "failed to extract {:?} to {:?}: {:?}",
+        "无法将 {:?} 提取到 {:?}: {:?}",
         downloaded_tar_gz,
         extracted,
         String::from_utf8_lossy(&output.stderr)
@@ -1023,7 +1023,7 @@ async fn install_release_linux(
 
     anyhow::ensure!(
         output.status.success(),
-        "failed to copy Zed update from {:?} to {:?}: {:?}",
+        "无法将 AIReach 更新从 {:?} 复制到 {:?}: {:?}",
         from,
         to,
         String::from_utf8_lossy(&output.stderr)
@@ -1058,7 +1058,7 @@ async fn install_release_macos(
 
     anyhow::ensure!(
         output.status.success(),
-        "failed to mount: {:?}",
+        "挂载失败: {:?}",
         String::from_utf8_lossy(&output.stderr)
     );
 
@@ -1079,7 +1079,7 @@ async fn install_release_macos(
 
     anyhow::ensure!(
         output.status.success(),
-        "failed to copy app: {:?}",
+        "复制应用程序失败: {:?}",
         String::from_utf8_lossy(&output.stderr)
     );
 

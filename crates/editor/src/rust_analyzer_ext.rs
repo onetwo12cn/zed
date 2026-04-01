@@ -283,7 +283,7 @@ pub fn open_docs(editor: &mut Editor, _: &OpenDocs, window: &mut Window, cx: &mu
                     )
                 })
                 .await
-                .context("open docs")?
+                .context("打开文档")?
         };
 
         if docs_urls.is_empty() {

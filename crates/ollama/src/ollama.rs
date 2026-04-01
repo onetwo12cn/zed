@@ -285,7 +285,7 @@ pub async fn stream_chat_completion(
         Ok(reader
             .lines()
             .map(|line| match line {
-                Ok(line) => serde_json::from_str(&line).context("Unable to parse chat response"),
+                Ok(line) => serde_json::from_str(&line).context("无法解析聊天响应"),
                 Err(e) => Err(e.into()),
             })
             .boxed())
@@ -293,7 +293,7 @@ pub async fn stream_chat_completion(
         let mut body = String::new();
         response.body_mut().read_to_string(&mut body).await?;
         anyhow::bail!(
-            "Failed to connect to Ollama API: {} {}",
+            "连接到 Ollama API 失败:{} {}",
             response.status(),
             body,
         );
@@ -309,7 +309,7 @@ pub async fn get_models(
     let request = HttpRequest::builder()
         .method(Method::GET)
         .uri(uri)
-        .header("Accept", "application/json")
+        .header("接受", "application/json")
         .when_some(api_key, |builder, api_key| {
             builder.header("Authorization", format!("Bearer {api_key}"))
         })
@@ -322,12 +322,12 @@ pub async fn get_models(
 
     anyhow::ensure!(
         response.status().is_success(),
-        "Failed to connect to Ollama API: {} {}",
+        "连接到 Ollama API 失败:{} {}",
         response.status(),
         body,
     );
     let response: LocalModelsResponse =
-        serde_json::from_str(&body).context("Unable to parse Ollama tag listing")?;
+        serde_json::from_str(&body).context("无法解析 Ollama 标签列表")?;
     Ok(response.models)
 }
 
@@ -356,7 +356,7 @@ pub async fn show_model(
 
     anyhow::ensure!(
         response.status().is_success(),
-        "Failed to connect to Ollama API: {} {}",
+        "连接到 Ollama API 失败:{} {}",
         response.status(),
         body,
     );

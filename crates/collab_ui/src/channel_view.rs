@@ -74,7 +74,7 @@ impl ChannelView {
             let channel_view = channel_view.await?;
             pane.update_in(cx, |pane, window, cx| {
                 telemetry::event!(
-                    "Channel Notes Opened",
+                    "频道笔记已打开",
                     channel_id,
                     room_id = ActiveCall::global(cx)
                         .read(cx)
@@ -330,7 +330,7 @@ impl ChannelView {
                 workspace.show_toast(
                     Toast::new(
                         NotificationId::unique::<CopyLinkForPositionToast>(),
-                        "Link copied to clipboard",
+                        "链接已复制到剪贴板",
                     ),
                     cx,
                 );

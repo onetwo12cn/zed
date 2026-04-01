@@ -190,7 +190,7 @@ pub fn init(cx: &mut App) {
             open_bundled_file(
                 workspace,
                 asset_str::<Assets>("licenses.md"),
-                "Open Source License Attribution",
+                "开源许可证归属",
                 "Markdown",
                 window,
                 cx,
@@ -259,7 +259,7 @@ pub fn init(cx: &mut App) {
             open_bundled_file(
                 workspace,
                 settings::default_settings(),
-                "Default Settings",
+                "默认设置",
                 "JSON",
                 window,
                 cx,
@@ -271,7 +271,7 @@ pub fn init(cx: &mut App) {
             open_bundled_file(
                 workspace,
                 settings::default_keymap(),
-                "Default Key Bindings",
+                "默认键绑定",
                 "JSON",
                 window,
                 cx,
@@ -455,7 +455,7 @@ pub fn initialize_workspace(
         initialize_file_watcher(window, cx);
 
         if let Some(specs) = window.gpu_specs() {
-            log::info!("Using GPU: {:?}", specs);
+            log::info!("使用显卡:{:?}", specs);
             show_software_emulation_warning_if_needed(specs.clone(), window, cx);
             crashes::set_gpu_info(specs);
         }
@@ -549,9 +549,9 @@ fn initialize_file_watcher(window: &mut Window, cx: &mut Context<Workspace>) {
         );
         let prompt = window.prompt(
             PromptLevel::Critical,
-            "Could not start inotify",
+            "无法启动 inotify",
             Some(&message),
-            &["Troubleshoot and Quit"],
+            &["排除故障并退出"],
             cx,
         );
         cx.spawn(async move |_, cx| {
@@ -571,18 +571,14 @@ fn initialize_file_watcher(window: &mut Window, cx: &mut Context<Workspace>) {
 fn initialize_file_watcher(window: &mut Window, cx: &mut Context<Workspace>) {
     if let Err(e) = fs::fs_watcher::global(|_| {}) {
         let message = format!(
-            db::indoc! {r#"
-            ReadDirectoryChangesW initialization failed: {}
-
-            This may occur on network filesystems and WSL paths. For troubleshooting see: https://zed.dev/docs/windows
-            "#},
+            db::indoc! {r#"\n            ReadDirectoryChangesW 初始化失败:{}\n\n            这可能发生在网络文件系统和 WSL 路径上。有关故障排除,请参阅:https://zed.dev/docs/windows\n            "#},
             e
         );
         let prompt = window.prompt(
             PromptLevel::Critical,
             "Could not start ReadDirectoryChangesW",
             Some(&message),
-            &["Troubleshoot and Quit"],
+            &["排除故障并退出"],
             cx,
         );
         cx.spawn(async move |_, cx| {
@@ -630,9 +626,9 @@ fn show_software_emulation_warning_if_needed(
         );
         let prompt = window.prompt(
             PromptLevel::Critical,
-            "Unsupported GPU",
+            "不支持的显卡",
             Some(&message),
-            &["Skip", "Troubleshoot and Quit"],
+            &["跳过", "排除故障并退出"],
             cx,
         );
         cx.spawn(async move |_, cx| {
@@ -1187,7 +1183,7 @@ fn register_actions(
                                 buffer
                                     .read(cx)
                                     .project_path(cx)
-                                    .expect("Settings file must have a location"),
+                                    .expect("设置文件必须有一个位置"),
                                 None,
                                 true,
                                 window,
@@ -1343,9 +1339,9 @@ fn quit(_: &Quit, cx: &mut App) {
                 .update(cx, |_, window, cx| {
                     window.prompt(
                         PromptLevel::Info,
-                        "Are you sure you want to quit?",
+                        "您确定要退出吗?",
                         None,
-                        &["Quit", "Cancel"],
+                        &["退出", "取消"],
                         cx,
                     )
                 })
@@ -1495,14 +1491,14 @@ fn open_log_file(workspace: &mut Workspace, window: &mut Window, cx: &mut Contex
                 buffer.set_text(log, cx);
             });
 
-            let buffer = cx.new(|cx| MultiBuffer::singleton(buffer, cx).with_title("Log".into()));
+            let buffer = cx.new(|cx| MultiBuffer::singleton(buffer, cx).with_title("日志".into()));
 
             let editor = cx
                 .new_window_entity(|window, cx| {
                     let mut editor = Editor::for_multibuffer(buffer, Some(project), window, cx);
                     editor.set_read_only(true);
                     editor.set_breadcrumb_header(format!(
-                        "Last {} lines in {}",
+                        "最后 {} 行在 {} 中",
                         MAX_LINES,
                         paths::log_file().display()
                     ));
@@ -1784,7 +1780,7 @@ fn show_keymap_file_json_error(
     show_app_notification(notification_id, cx, move |cx| {
         cx.new(|cx| {
             MessageNotification::new(message.clone(), cx)
-                .primary_message("Open Keymap File")
+                .primary_message("打开快捷键映射文件")
                 .primary_icon(IconName::Settings)
                 .primary_on_click(|window, cx| {
                     window.dispatch_action(zed_actions::OpenKeymapFile.boxed_clone(), cx);
@@ -1802,7 +1798,7 @@ fn show_keymap_file_load_error(
     show_markdown_app_notification(
         notification_id,
         error_message,
-        "Open Keymap File".into(),
+        "打开快捷键映射文件".into(),
         |window, cx| {
             window.dispatch_action(zed_actions::OpenKeymapFile.boxed_clone(), cx);
             cx.emit(DismissEvent);
@@ -1858,7 +1854,7 @@ fn reload_keymaps(cx: &mut App, mut user_key_bindings: Vec<KeyBinding>) {
     // On Windows, this is set in the `update_jump_list` method of the `HistoryManager`.
     #[cfg(not(target_os = "windows"))]
     cx.set_dock_menu(vec![gpui::MenuItem::action(
-        "New Window",
+        "新窗口",
         workspace::NewWindow,
     )]);
     // todo: nicer api here?
@@ -1894,7 +1890,7 @@ pub fn open_new_ssh_project_from_project(
 ) -> Task<anyhow::Result<()>> {
     let app_state = workspace.app_state().clone();
     let Some(ssh_client) = workspace.project().read(cx).remote_client() else {
-        return Task::ready(Err(anyhow::anyhow!("Not an ssh project")));
+        return Task::ready(Err(anyhow::anyhow!("不是一个 ssh 项目")));
     };
     let connection_options = ssh_client.read(cx).connection_options();
     cx.spawn_in(window, async move |_, cx| {
@@ -1996,7 +1992,7 @@ fn open_local_file(
                             project.create_entry((tree_id, dir_path), true, cx)
                         })
                         .await
-                        .context("worktree was removed")?;
+                        .context("工作树已被移除")?;
                 }
 
                 if worktree.read_with(cx, |tree, _| {
@@ -2007,7 +2003,7 @@ fn open_local_file(
                             project.create_entry((tree_id, settings_relative_path), false, cx)
                         })
                         .await
-                        .context("worktree was removed")?;
+                        .context("工作树已被移除")?;
                 }
             }
 
@@ -2039,7 +2035,7 @@ fn open_local_file(
         struct NoOpenFolders;
 
         workspace.show_notification(NotificationId::unique::<NoOpenFolders>(), cx, |cx| {
-            cx.new(|cx| MessageNotification::new("This project has no folders open.", cx))
+            cx.new(|cx| MessageNotification::new("该项目没有打开的文件夹。", cx))
         })
     }
 }
@@ -3151,20 +3147,20 @@ mod tests {
             ]
             .into_iter()
             .find_map(std::convert::identity)
-            .expect("found no project panels")
+            .expect("未找到项目面板")
             .read(cx);
             let (selected_worktree, selected_entry) = project_panel
                 .selected_entry(cx)
-                .expect("project panel should have a selected entry");
+                .expect("项目面板应有一个选定的条目");
             assert_eq!(
                 selected_worktree.abs_path().as_ref(),
                 expected_worktree_path,
-                "Unexpected project panel selected worktree path"
+                "意外的项目面板选定工作树路径"
             );
             assert_eq!(
                 selected_entry.path.as_ref(),
                 expected_entry_path,
-                "Unexpected project panel selected entry path"
+                "意外的项目面板选定条目路径"
             );
         }
 
@@ -3485,13 +3481,13 @@ mod tests {
                 Some(rel_path(".git/HEAD").into()),
                 Some(rel_path("excluded_dir/file").into()),
             ],
-            "Excluded files should get opened, excluded dir should not get opened"
+            "排除的文件应被打开,排除的目录不应被打开"
         );
 
         let entries = cx.read(|cx| workspace.file_project_paths(cx));
         assert_eq!(
             initial_entries, entries,
-            "Workspace entries should not change after opening excluded files and directories paths"
+            "打开排除的文件和目录路径后,工作区条目不应更改"
         );
 
         cx.read(|cx| {
@@ -3500,7 +3496,7 @@ mod tests {
                     .items()
                     .map(|i| {
                         i.project_path(cx)
-                            .expect("all excluded files that got open should have a path")
+                            .expect("所有被打开的排除文件都应有路径")
                             .path
                     })
                     .collect::<Vec<_>>();
@@ -3508,7 +3504,7 @@ mod tests {
                 assert_eq!(
                     opened_buffer_paths,
                     vec![rel_path(".git/HEAD").into(), rel_path("excluded_dir/file").into()],
-                    "Despite not being present in the worktrees, buffers for excluded files are opened and added to the pane"
+                    "尽管不在工作树中,排除文件的缓冲区仍被打开并添加到窗格中"
                 );
             });
     }
@@ -4986,7 +4982,7 @@ mod tests {
             languages
                 .language_for_name(name.as_ref())
                 .await
-                .with_context(|| format!("language name {name}"))
+                .with_context(|| format!("语言名称 {name}"))
                 .unwrap();
         }
         cx.run_until_parked();
@@ -5094,7 +5090,7 @@ mod tests {
                     // actions match...
                     bound_action.partial_eq(action)
                 }),
-                "On {} Failed to find {}",
+                "在 {} 上未找到 {}",
                 line,
                 action.name(),
             );
@@ -5103,7 +5099,7 @@ mod tests {
                 bindings
                     .into_iter()
                     .any(|binding| binding.keystrokes().iter().any(|k| k.key() == key)),
-                "On {} Failed to find {} with key binding {}",
+                "在 {} 上未找到具有键绑定 {} 的 {}",
                 line,
                 action.name(),
                 key
@@ -5619,7 +5615,7 @@ mod tests {
             "Case 1: Should prompt to save dirty item in active workspace"
         );
 
-        cx.simulate_prompt_answer("Cancel");
+        cx.simulate_prompt_answer("取消");
         cx.run_until_parked();
 
         assert_eq!(
@@ -5696,7 +5692,7 @@ mod tests {
             "Case 2: Should prompt to save dirty item in non-active workspace"
         );
 
-        cx.simulate_prompt_answer("Cancel");
+        cx.simulate_prompt_answer("取消");
         cx.run_until_parked();
 
         assert_eq!(
@@ -5780,7 +5776,7 @@ mod tests {
             "Case 3: Should prompt to save dirty item in non-active window"
         );
 
-        cx.simulate_prompt_answer("Cancel");
+        cx.simulate_prompt_answer("取消");
         cx.run_until_parked();
 
         assert_eq!(

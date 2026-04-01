@@ -56,7 +56,7 @@ pub fn toggle_screen_sharing(
                 let should_unshare_current_screen = room.is_sharing_screen();
                 let unshared_current_screen = should_unshare_current_screen.then(|| {
                     telemetry::event!(
-                        "Screen Share Disabled",
+                        "禁用屏幕共享",
                         room_id = room.id(),
                         channel_id = room.channel_id(),
                     );
@@ -65,7 +65,7 @@ pub fn toggle_screen_sharing(
                 if let Some(screen) = screen {
                     if !should_unshare_current_screen {
                         telemetry::event!(
-                            "Screen Share Enabled",
+                            "启用屏幕共享",
                             room_id = room.id(),
                             channel_id = room.channel_id(),
                         );
@@ -86,7 +86,7 @@ pub fn toggle_screen_sharing(
         }
         Err(e) => Task::ready(Err(e)),
     };
-    toggle_screen_sharing.detach_and_prompt_err("Sharing Screen Failed", window, cx, |e, _, _| Some(format!("{:?}\n\nPlease check that you have given Zed permissions to record your screen in Settings.", e)));
+    toggle_screen_sharing.detach_and_prompt_err("屏幕共享失败", window, cx, |e, _, _| Some(format!("{:?}\n\nPlease check that you have given Zed permissions to record your screen in Settings.", e)));
 }
 
 pub fn toggle_mute(cx: &mut App) {
@@ -94,9 +94,9 @@ pub fn toggle_mute(cx: &mut App) {
     if let Some(room) = call.room().cloned() {
         room.update(cx, |room, cx| {
             let operation = if room.is_muted() {
-                "Microphone Enabled"
+                "已启用话筒"
             } else {
-                "Microphone Disabled"
+                "已禁用话筒"
             };
             telemetry::event!(
                 operation,
@@ -561,9 +561,9 @@ impl TitleBar {
                 .toggle_state(is_screen_sharing)
                 .selected_style(ButtonStyle::Tinted(TintColor::Accent))
                 .tooltip(Tooltip::text(if is_screen_sharing {
-                    "Stop Sharing Screen"
+                    "停止共享屏幕"
                 } else {
-                    "Share Screen"
+                    "共享屏幕"
                 }))
                 .on_click(move |_, window, cx| {
                     let should_share = ActiveCall::global(cx)
@@ -586,7 +586,7 @@ impl TitleBar {
                                 }
                             });
                             task.detach_and_prompt_err(
-                                "Sharing Screen Failed",
+                                "屏幕共享失败",
                                 window,
                                 cx,
                                 |e, _, _| Some(format!("{e:?}")),

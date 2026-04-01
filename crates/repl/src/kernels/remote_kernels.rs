@@ -79,7 +79,7 @@ pub async fn list_remote_kernelspecs(
 
     anyhow::ensure!(
         response.status().is_success(),
-        "Failed to fetch kernel specs: {}",
+        "获取内核规范失败: {}",
         response.status()
     );
     let mut body = response.into_body();
@@ -100,7 +100,7 @@ pub async fn list_remote_kernelspecs(
         })
         .collect::<Vec<RemoteKernelSpecification>>();
 
-    anyhow::ensure!(!remote_kernelspecs.is_empty(), "No kernel specs found");
+    anyhow::ensure!(!remote_kernelspecs.is_empty(), "未找到内核规范");
     Ok(remote_kernelspecs)
 }
 

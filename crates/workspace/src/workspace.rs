@@ -877,7 +877,7 @@ impl ProjectItemRegistry {
             .rev()
             .find_map(|open_project_item| open_project_item(project, path, window, cx))
         else {
-            return Task::ready(Err(anyhow!("cannot open file {:?}", path.path)));
+            return Task::ready(Err(anyhow!("不能打开文件 {:?}", path.path)));
         };
         open_project_item
     }
@@ -5612,7 +5612,7 @@ impl Workspace {
         }
 
         if title.is_empty() {
-            title = "empty project".to_string();
+            title = "空项目".to_string();
         }
 
         if let Some(path) = self.active_item(cx).and_then(|item| item.project_path(cx)) {
@@ -5793,7 +5793,7 @@ impl Workspace {
         update: proto::UpdateFollowers,
         cx: &mut AsyncWindowContext,
     ) -> Result<()> {
-        match update.variant.context("invalid update")? {
+        match update.variant.context("无效更新")? {
             proto::update_followers::Variant::CreateView(view) => {
                 let view_id = ViewId::from_proto(view.id.clone().context("invalid view id")?)?;
                 let should_add_view = this.update(cx, |this, _| {
@@ -5866,10 +5866,10 @@ impl Workspace {
         view: &proto::View,
         cx: &mut AsyncWindowContext,
     ) -> Result<()> {
-        let this = this.upgrade().context("workspace dropped")?;
+        let this = this.upgrade().context("工作区已丢弃")?;
 
         let Some(id) = view.id.clone() else {
-            anyhow::bail!("no id for view");
+            anyhow::bail!("无视图 ID");
         };
         let id = ViewId::from_proto(id)?;
         let panel_id = view.panel_id.and_then(proto::PanelId::from_i32);
@@ -8968,13 +8968,13 @@ pub fn join_channel(
                             )
                             .into(),
                             ErrorCode::Disconnected => {
-                                "Please check your internet connection and try again.".into()
+                                "请检查您的互联网连接并重试。".into()
                             }
                             _ => format!("{}\n\nPlease try again.", err).into(),
                         };
                         window.prompt(
                             PromptLevel::Critical,
-                            "Failed to join channel",
+                            "加入频道失败",
                             Some(&detail),
                             &["Ok"],
                             cx,
@@ -9843,9 +9843,9 @@ pub fn reload(cx: &mut App) {
             .update(cx, |_, window, cx| {
                 window.prompt(
                     PromptLevel::Info,
-                    "Are you sure you want to restart?",
+                    "您确定要重启吗?",
                     None,
-                    &["Restart", "Cancel"],
+                    &["重启", "Cancel"],
                     cx,
                 )
             })
@@ -12338,7 +12338,7 @@ mod tests {
                 .active_pane()
                 .read(cx)
                 .active_item()
-                .expect("item is in focus");
+                .expect("项目处于焦点");
 
             assert_eq!(num_panes, 4);
             assert_eq!(num_items_in_current_pane, 1);
@@ -12356,7 +12356,7 @@ mod tests {
                 .active_pane()
                 .read(cx)
                 .active_item()
-                .expect("item is in focus");
+                .expect("项目处于焦点");
 
             assert_eq!(num_panes, 1);
             assert_eq!(num_items_in_current_pane, 3);
@@ -13044,7 +13044,7 @@ mod tests {
             TestItem::new(cx)
                 .with_dirty(true)
                 .with_buffer_kind(ItemBufferKind::Multibuffer)
-                .with_label("Fake Project Search")
+                .with_label("假项目搜索")
                 .with_project_items(&[
                     dirty_regular_buffer.read(cx).project_items[0].clone(),
                     dirty_regular_buffer_2.read(cx).project_items[0].clone(),
@@ -13086,7 +13086,7 @@ mod tests {
             assert_eq!(
                 pane.active_item().unwrap().item_id(),
                 multi_buffer_with_both_files_id,
-                "Should select the multi buffer in the pane"
+                "应在窗格中选择多缓冲区"
             );
         });
         let close_all_but_multi_buffer_task = pane.update_in(cx, |pane, window, cx| {
@@ -13104,7 +13104,7 @@ mod tests {
         assert!(!cx.has_pending_prompt());
         close_all_but_multi_buffer_task
             .await
-            .expect("Closing all buffers but the multi buffer failed");
+            .expect("关闭除多缓冲区外的所有缓冲区失败");
         pane.update(cx, |pane, cx| {
             assert_eq!(dirty_regular_buffer.read(cx).save_count, 1);
             assert_eq!(dirty_multi_buffer_with_both.read(cx).save_count, 0);
@@ -13113,11 +13113,11 @@ mod tests {
             assert_eq!(
                 pane.active_item().unwrap().item_id(),
                 multi_buffer_with_both_files_id,
-                "Should have only the multi buffer left in the pane"
+                "窗格中应只剩下多缓冲区"
             );
             assert!(
                 dirty_multi_buffer_with_both.read(cx).is_dirty,
-                "The multi buffer containing the unsaved buffer should still be dirty"
+                "包含未保存缓冲区的多缓冲区应仍然是脏的"
             );
         });
 
@@ -13138,24 +13138,24 @@ mod tests {
         cx.background_executor.run_until_parked();
         assert!(
             cx.has_pending_prompt(),
-            "Dirty multi buffer should prompt a save dialog"
+            "脏的多缓冲区应提示保存对话框"
         );
         cx.simulate_prompt_answer("Save");
         cx.background_executor.run_until_parked();
         close_multi_buffer_task
             .await
-            .expect("Closing the multi buffer failed");
+            .expect("关闭多缓冲区失败");
         pane.update(cx, |pane, cx| {
             assert_eq!(
                 dirty_multi_buffer_with_both.read(cx).save_count,
                 1,
-                "Multi buffer item should get be saved"
+                "多缓冲区项目应被保存"
             );
             // Test impl does not save inner items, so we do not assert them
             assert_eq!(
                 pane.items_len(),
                 0,
-                "No more items should be left in the pane"
+                "窗格中不应再有项目"
             );
             assert!(pane.active_item().is_none());
         });
@@ -13195,7 +13195,7 @@ mod tests {
             TestItem::new(cx)
                 .with_dirty(true)
                 .with_buffer_kind(ItemBufferKind::Multibuffer)
-                .with_label("Fake Project Search")
+                .with_label("假项目搜索")
                 .with_project_items(&[
                     dirty_regular_buffer.read(cx).project_items[0].clone(),
                     dirty_regular_buffer_2.read(cx).project_items[0].clone(),
@@ -13229,7 +13229,7 @@ mod tests {
             assert_eq!(
                 pane.active_item().unwrap().item_id(),
                 multi_buffer_with_both_files_id,
-                "Should select the multi buffer in the pane"
+                "应在窗格中选择多缓冲区"
             );
         });
         let _close_multi_buffer_task = pane.update_in(cx, |pane, window, cx| {
@@ -13245,7 +13245,7 @@ mod tests {
         cx.background_executor.run_until_parked();
         assert!(
             cx.has_pending_prompt(),
-            "With one dirty item from the multi buffer not being in the pane, a save prompt should be shown"
+            "多缓冲区中的一个脏项目不在窗格中时,应显示保存提示"
         );
     }
 
@@ -13609,7 +13609,7 @@ mod tests {
             TestItem::new(cx)
                 .with_dirty(true)
                 .with_buffer_kind(ItemBufferKind::Multibuffer)
-                .with_label("Fake Project Search")
+                .with_label("假项目搜索")
                 .with_project_items(&[
                     dirty_regular_buffer.read(cx).project_items[0].clone(),
                     dirty_regular_buffer_2.read(cx).project_items[0].clone(),
@@ -13651,7 +13651,7 @@ mod tests {
             assert_eq!(
                 pane.active_item().unwrap().item_id(),
                 dirty_multi_buffer.item_id(),
-                "Should select the multi buffer in the pane"
+                "应在窗格中选择多缓冲区"
             );
         });
         let close_multi_buffer_task = pane.update_in(cx, |pane, window, cx| {
@@ -13667,11 +13667,11 @@ mod tests {
         cx.background_executor.run_until_parked();
         assert!(
             !cx.has_pending_prompt(),
-            "All dirty items from the multi buffer are in the pane still, no save prompts should be shown"
+            "多缓冲区中的所有脏项目仍在窗格中,不应显示保存提示"
         );
         close_multi_buffer_task
             .await
-            .expect("Closing multi buffer failed");
+            .expect("关闭多缓冲区失败");
         pane.update(cx, |pane, cx| {
             assert_eq!(dirty_regular_buffer.read(cx).save_count, 0);
             assert_eq!(dirty_multi_buffer.read(cx).save_count, 0);
@@ -13685,7 +13685,7 @@ mod tests {
                     dirty_regular_buffer.item_id(),
                     dirty_regular_buffer_2.item_id(),
                 ],
-                "Should have no multi buffer left in the pane"
+                "窗格中不应剩下多缓冲区"
             );
             assert!(dirty_regular_buffer.read(cx).is_dirty);
             assert!(dirty_regular_buffer_2.read(cx).is_dirty);
@@ -14243,7 +14243,7 @@ mod tests {
                 json!({
                     "one.png": "BINARYDATAHERE",
                     "two.ipynb": "{ totally a notebook }",
-                    "three.txt": "editing text, sure why not?"
+                    "three.txt": "编辑文本,当然可以"
                 }),
             )
             .await;
@@ -14307,7 +14307,7 @@ mod tests {
                 json!({
                     "one.png": "BINARYDATAHERE",
                     "two.ipynb": "{ totally a notebook }",
-                    "three.txt": "editing text, sure why not?"
+                    "three.txt": "编辑文本,当然可以"
                 }),
             )
             .await;

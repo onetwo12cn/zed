@@ -511,22 +511,22 @@ impl TerminalView {
             .is_some_and(|text| !text.is_empty());
         let context_menu = ContextMenu::build(window, cx, |menu, _, _| {
             menu.context(self.focus_handle.clone())
-                .action("New Terminal", Box::new(NewTerminal::default()))
+                .action("新建终端", Box::new(NewTerminal::default()))
                 .separator()
-                .action("Copy", Box::new(Copy))
-                .action("Paste", Box::new(Paste))
-                .action("Select All", Box::new(SelectAll))
-                .action("Clear", Box::new(Clear))
+                .action("复制", Box::new(Copy))
+                .action("粘贴", Box::new(Paste))
+                .action("全选", Box::new(SelectAll))
+                .action("清除", Box::new(Clear))
                 .when(assistant_enabled, |menu| {
                     menu.separator()
-                        .action("Inline Assist", Box::new(InlineAssist::default()))
+                        .action("内联助手", Box::new(InlineAssist::default()))
                         .when(has_selection, |menu| {
                             menu.action("Add to Agent Thread", Box::new(AddSelectionToThread))
                         })
                 })
                 .separator()
                 .action(
-                    "Close Terminal Tab",
+                    "关闭终端",
                     Box::new(CloseActiveItem {
                         save_intent: None,
                         close_pinned: true,

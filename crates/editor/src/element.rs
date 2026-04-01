@@ -4816,7 +4816,7 @@ impl EditorElement {
                     };
                     let mut element = self
                         .render_context_menu(line_height, menu_height, window, cx)
-                        .expect("Visible context menu should always render.");
+                        .expect("可见的上下文菜单应始终呈现。");
                     let size = element.layout_as_root(AvailableSpace::min_size(), window, cx);
                     Some((CursorPopoverType::CodeContextMenu, element, size))
                 } else {
@@ -4989,7 +4989,7 @@ impl EditorElement {
             move |height, _max_width_for_stable_x, _, window, cx| {
                 let mut element = self
                     .render_context_menu(line_height, height, window, cx)
-                    .expect("Visible context menu should always render.");
+                    .expect("可见的上下文菜单应始终呈现。");
                 let size = element.layout_as_root(AvailableSpace::min_size(), window, cx);
                 vec![(CursorPopoverType::CodeContextMenu, element, size)]
             },
@@ -5621,7 +5621,7 @@ impl EditorElement {
                         DiffHunkStatusKind::Added => colors.version_control_word_added,
                         DiffHunkStatusKind::Deleted => colors.version_control_word_deleted,
                         DiffHunkStatusKind::Modified => {
-                            debug_panic!("modified diff status for row info");
+                            debug_panic!("修改后的行信息差异状态");
                             return None;
                         }
                     };
@@ -8753,9 +8753,9 @@ enum LineFragment {
 impl fmt::Debug for LineFragment {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            LineFragment::Text(shaped_line) => f.debug_tuple("Text").field(shaped_line).finish(),
+            LineFragment::Text(shaped_line) => f.debug_tuple("文本").field(shaped_line).finish(),
             LineFragment::Element { size, len, .. } => f
-                .debug_struct("Element")
+                .debug_struct("元素")
                 .field("size", size)
                 .field("len", len)
                 .finish(),
@@ -9104,7 +9104,7 @@ impl LineWithInvisibles {
                 LineFragment::Element { element, size, .. } => {
                     let mut element = element
                         .take()
-                        .expect("you can't prepaint LineWithInvisibles twice");
+                        .expect("你不能两次预绘制带有不可见字符的行");
 
                     // Center the element vertically within the line.
                     let mut element_origin = fragment_origin;
@@ -9910,7 +9910,7 @@ impl Element for EditorElement {
                                 cx.theme().colors().version_control_deleted
                             }
                             DiffHunkStatusKind::Modified => {
-                                debug_panic!("modified diff status for row info");
+                                debug_panic!("修改后的行信息差异状态");
                                 continue;
                             }
                         };
@@ -13110,9 +13110,9 @@ mod tests {
                 .chars()
                 .filter(|initial_char| initial_char.is_whitespace())
                 .count(),
-            "Hardcoded expected invisibles differ from the actual ones in '{input_text}'"
+            "硬编码的预期不可见字符与 '{input_text}' 中的实际字符不同"
         );
-        info!("Expected invisibles: {expected_invisibles:?}");
+        info!("预期的不可见字符:{expected_invisibles:?}");
 
         init_test(cx, |_| {});
 
@@ -13148,19 +13148,19 @@ mod tests {
                             | (Invisible::Tab { .. }, Invisible::Tab { .. }) => {}
                             _ => {
                                 panic!(
-                                    "At index {i}, expected invisible {expected_invisible:?} does not match actual {actual_invisible:?} by kind. Actual invisibles: {actual_invisibles:?}"
+                                    "在索引 {i} 处,预期的不可见字符 {expected_invisible:?} 与实际的 {actual_invisible:?} 类型不匹配。实际的不可见字符:{actual_invisibles:?}"
                                 )
                             }
                         },
                         None => {
-                            panic!("Unexpected extra invisible {actual_invisible:?} at index {i}")
+                            panic!("在索引 {i} 处出现了意外的额外不可见字符 {actual_invisible:?}")
                         }
                     }
                 }
                 let missing_expected_invisibles = &expected_invisibles[i + 1..];
                 assert!(
                     missing_expected_invisibles.is_empty(),
-                    "Missing expected invisibles after index {i}: {missing_expected_invisibles:?}"
+                    "在索引 {i} 之后缺少预期的不可见字符:{missing_expected_invisibles:?}"
                 );
 
                 editor_width += resize_step;
@@ -13176,7 +13176,7 @@ mod tests {
         show_line_numbers: bool,
     ) -> Vec<Invisible> {
         info!(
-            "Creating editor with mode {editor_mode:?}, width {}px and text '{input_text}'",
+            "创建编辑器,模式为 {editor_mode:?},宽度为 {} 像素,文本为 '{input_text}'",
             f32::from(editor_width)
         );
         let window = cx.add_window(|window, cx| {

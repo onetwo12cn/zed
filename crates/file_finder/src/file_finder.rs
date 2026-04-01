@@ -1411,7 +1411,7 @@ impl PickerDelegate for FileFinderDelegate {
     type ListItem = ListItem;
 
     fn placeholder_text(&self, _window: &mut Window, _cx: &mut App) -> Arc<str> {
-        "Search project files...".into()
+        "搜索项目文件...".into()
     }
 
     fn match_count(&self) -> usize {
@@ -1884,19 +1884,19 @@ impl PickerDelegate for FileFinderDelegate {
                                             move |menu, _, _| {
                                                 menu.context(focus_handle)
                                                     .action(
-                                                        "Split Left",
+                                                        "向左拆分",
                                                         pane::SplitLeft::default().boxed_clone(),
                                                     )
                                                     .action(
-                                                        "Split Right",
+                                                        "向右拆分",
                                                         pane::SplitRight::default().boxed_clone(),
                                                     )
                                                     .action(
-                                                        "Split Up",
+                                                        "向上拆分",
                                                         pane::SplitUp::default().boxed_clone(),
                                                     )
                                                     .action(
-                                                        "Split Down",
+                                                        "向下拆分",
                                                         pane::SplitDown::default().boxed_clone(),
                                                     )
                                             }
@@ -1905,7 +1905,7 @@ impl PickerDelegate for FileFinderDelegate {
                                 }),
                         )
                         .child(
-                            Button::new("open-selection", "Open")
+                            Button::new("open-selection", "打开")
                                 .key_binding(
                                     KeyBinding::for_action_in(&menu::Confirm, &focus_handle, cx)
                                         .map(|kb| kb.size(rems_from_px(12.))),

@@ -152,10 +152,10 @@ impl BranchList {
 
         cx.spawn_in(window, async move |this, cx| {
             let mut all_branches = all_branches_request
-                .context("No active repository")?
+                .context("没有活动的代码仓库")?
                 .await??;
             let default_branch = default_branch_request
-                .context("No active repository")?
+                .context("没有活动的代码仓库")?
                 .await
                 .map(Result::ok)
                 .ok()
@@ -446,7 +446,7 @@ impl BranchListDelegate {
 
             Ok(())
         })
-        .detach_and_prompt_err("Failed to create branch", window, cx, |e, _, _| {
+        .detach_and_prompt_err("创建分支失败", window, cx, |e, _, _| {
             Some(e.to_string())
         });
         cx.emit(DismissEvent);
@@ -813,7 +813,7 @@ impl PickerDelegate for BranchListDelegate {
                     anyhow::Ok(())
                 })
                 .detach_and_prompt_err(
-                    "Failed to change branch",
+                    "切换分支失败",
                     window,
                     cx,
                     |_, _, _| None,

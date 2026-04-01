@@ -206,7 +206,7 @@ impl ThemeSelectorDelegate {
                     Some(theme)
                 }
                 Err(error) => {
-                    log::error!("error loading theme {}: {}", mat.string, error);
+                    log::error!("加载主题 {} 时出错:{}", mat.string, error);
                     None
                 }
             }
@@ -338,7 +338,7 @@ impl PickerDelegate for ThemeSelectorDelegate {
     type ListItem = ui::ListItem;
 
     fn placeholder_text(&self, _window: &mut Window, _cx: &mut App) -> Arc<str> {
-        "Select Theme...".into()
+        "选择主题...".into()
     }
 
     fn match_count(&self) -> usize {
@@ -357,7 +357,7 @@ impl PickerDelegate for ThemeSelectorDelegate {
         let theme_appearance = self.new_theme.appearance;
         let system_appearance = SystemAppearance::global(cx).0;
 
-        telemetry::event!("Settings Changed", setting = "theme", value = theme_name);
+        telemetry::event!("设置已更改", setting = "theme", value = theme_name);
 
         update_settings_file(self.fs.clone(), cx, move |settings, _| {
             theme_settings::set_theme(settings, theme_name, theme_appearance, system_appearance);

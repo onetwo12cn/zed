@@ -10,7 +10,7 @@ use url::Url;
 pub struct RemoteUrl(Url);
 
 static USERNAME_REGEX: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^[0-9a-zA-Z\-_]+@").expect("Failed to create USERNAME_REGEX"));
+    LazyLock::new(|| Regex::new(r"^[0-9a-zA-Z\-_]+@").expect("创建 USERNAME_REGEX 失败"));
 
 impl FromStr for RemoteUrl {
     type Err = url::ParseError;
@@ -68,19 +68,19 @@ mod tests {
         ];
 
         for (input, expected_scheme, expected_host, expected_path) in valid_urls {
-            let parsed = input.parse::<RemoteUrl>().expect("failed to parse URL");
+            let parsed = input.parse::<RemoteUrl>().expect("解析 URL 失败");
             let url = parsed.0;
             assert_eq!(
                 url.scheme(),
                 expected_scheme,
-                "unexpected scheme for {input:?}",
+                "意外的方案 {input:?}",
             );
             assert_eq!(
                 url.host_str().unwrap_or(""),
                 expected_host,
-                "unexpected host for {input:?}",
+                "意外的主机 {input:?}",
             );
-            assert_eq!(url.path(), expected_path, "unexpected path for {input:?}");
+            assert_eq!(url.path(), expected_path, "意外的路径 {input:?}");
         }
     }
 
@@ -91,7 +91,7 @@ mod tests {
         for url in invalid_urls {
             assert!(
                 url.parse::<RemoteUrl>().is_err(),
-                "expected \"{url}\" to not parse as a Git remote URL",
+                "expected \"{url}\"不解析为 Git 远程 URL",
             );
         }
     }

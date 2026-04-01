@@ -1154,9 +1154,9 @@ impl PickerDelegate for RecentProjectsDelegate {
 
     fn no_matches_text(&self, _window: &mut Window, _cx: &mut App) -> Option<SharedString> {
         let text = if self.workspaces.is_empty() && self.open_folders.is_empty() {
-            "Recently opened projects will show up here".into()
+            "最近打开的项目将显示在这里".into()
         } else {
-            "No matches".into()
+            "无匹配项".into()
         };
         Some(text)
     }
@@ -1995,7 +1995,7 @@ mod tests {
 
         assert!(
             !cx.has_pending_prompt(),
-            "Should have no pending prompt on dirty project before opening the new recent project"
+            "在打开新的最近项目之前,不应有未处理的提示"
         );
         let dirty_workspace = multi_workspace
             .read_with(cx, |multi_workspace, _cx| {
@@ -2023,7 +2023,7 @@ mod tests {
                         .read(cx)
                         .active_modal::<RecentProjects>(cx)
                         .is_none(),
-                    "Should remove the modal after selecting new recent project"
+                    "选择新的最近项目后应移除模态框"
                 );
 
                 assert!(

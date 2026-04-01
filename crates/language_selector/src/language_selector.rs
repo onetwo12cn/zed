@@ -199,7 +199,7 @@ impl PickerDelegate for LanguageSelectorDelegate {
     type ListItem = ListItem;
 
     fn placeholder_text(&self, _window: &mut Window, _cx: &mut App) -> Arc<str> {
-        "Select a language…".into()
+        "搜索语言…".into()
     }
 
     fn match_count(&self) -> usize {
@@ -214,8 +214,8 @@ impl PickerDelegate for LanguageSelectorDelegate {
             let buffer = self.buffer.downgrade();
             cx.spawn_in(window, async move |_, cx| {
                 let language = language.await?;
-                let project = project.upgrade().context("project was dropped")?;
-                let buffer = buffer.upgrade().context("buffer was dropped")?;
+                let project = project.upgrade().context("项目已删除")?;
+                let buffer = buffer.upgrade().context("缓冲区已删除")?;
                 project.update(cx, |project, cx| {
                     project.set_language_for_buffer(&buffer, language, cx);
                 });

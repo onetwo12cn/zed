@@ -153,7 +153,7 @@ pub async fn open_db<M: Migrator + 'static>(db_dir: &Path, scope: &str) -> Threa
     let connection = maybe!(async {
         smol::fs::create_dir_all(&main_db_dir)
             .await
-            .context("Could not create db directory")
+            .context("不能创建数据库目录")
             .log_err()?;
         let db_path = main_db_dir.join(Path::new(DB_FILE_NAME));
         open_main_db::<M>(&db_path).await

@@ -1281,7 +1281,7 @@ impl ConfigurationView {
             let state = state.clone();
             async move |this, cx| {
                 if let Some(task) = Some(state.update(cx, |state, cx| state.authenticate(cx))) {
-                    // We don't log an error, because "not signed in" is also an error.
+                    // We don't log an error, because "未登录" is also an error.
                     let _ = task.await;
                 }
                 this.update(cx, |this, cx| {
@@ -1378,7 +1378,7 @@ impl Render for ConfigurationView {
                 )
                 .child(
                     Label::new(
-                        "Note that having a subscription for another service like GitHub Copilot won't work.",
+                        "请注意,拥有其他服务的订阅,如 GitHub Copilot,不会起作用。",
                     )
                     .size(LabelSize::Small).color(Color::Muted),
                 )

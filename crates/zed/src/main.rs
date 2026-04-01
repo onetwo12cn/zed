@@ -73,7 +73,7 @@ use crate::zed::{OpenRequestKind, eager_load_active_theme_and_icon_theme};
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 fn files_not_created_on_launch(errors: HashMap<io::ErrorKind, Vec<&Path>>) {
-    let message = "Zed failed to launch";
+    let message = "AIReach 启动失败";
     let error_details = errors
         .into_iter()
         .flat_map(|(kind, paths)| {
@@ -112,7 +112,7 @@ fn files_not_created_on_launch(errors: HashMap<io::ErrorKind, Vec<&Path>>) {
                             gpui::PromptLevel::Critical,
                             message,
                             Some(&error_details),
-                            &["Exit"],
+                            &["退出"],
                             cx,
                         );
 
@@ -155,7 +155,7 @@ fn fail_to_open_window(e: anyhow::Error, _cx: &mut App) {
             proxy
                 .add_notification(
                     notification_id,
-                    Notification::new("Zed failed to launch")
+                    Notification::new("AIReach 启动失败")
                         .body(Some(
                             format!(
                                 "{e:?}. See https://zed.dev/docs/linux for troubleshooting steps."
@@ -383,7 +383,7 @@ fn main() {
         }
     };
     if failed_single_instance_check {
-        println!("zed is already running");
+        println!("zed 已在运行");
         return;
     }
 
@@ -800,12 +800,12 @@ fn main() {
         })
         .detach();
         telemetry::event!(
-            "Settings Changed",
+            "设置已更改",
             setting = "theme",
             value = cx.theme().name.to_string()
         );
         telemetry::event!(
-            "Settings Changed",
+            "设置已更改",
             setting = "keymap",
             value = BaseKeymap::get_global(cx).to_string()
         );
@@ -1225,7 +1225,7 @@ fn handle_open_request(request: OpenRequest, app_state: Arc<AppState>, cx: &mut 
             .await?;
             for result in results.into_iter().flatten() {
                 if let Err(err) = result {
-                    log::error!("Error opening path: {err}",);
+                    log::error!("打开路径时出错:{err}",);
                 }
             }
             anyhow::Ok(())
@@ -1777,11 +1777,11 @@ fn load_user_themes_in_background(fs: Arc<dyn fs::Fs>, cx: &mut App) {
                 .map(|m| m.is_dir)
             {
                 Some(is_dir) => {
-                    anyhow::ensure!(is_dir, "Themes dir path {themes_dir:?} is not a directory")
+                    anyhow::ensure!(is_dir, "主题目录 {themes_dir:?} 不是一个目录")
                 }
                 None => {
                     fs.create_dir(themes_dir).await.with_context(|| {
-                        format!("Failed to create themes dir at path {themes_dir:?}")
+                        format!("创建主题目录失败,路径为 {themes_dir:?}")
                     })?;
                 }
             }

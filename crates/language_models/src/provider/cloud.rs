@@ -1120,7 +1120,7 @@ impl RenderOnce for ZedAiConfiguration {
         };
 
         let manage_subscription_buttons = if has_paid_plan {
-            Button::new("manage_settings", "Manage Subscription")
+            Button::new("manage_settings", "管理订阅")
                 .full_width()
                 .label_size(LabelSize::Small)
                 .style(ButtonStyle::Tinted(TintColor::Accent))
